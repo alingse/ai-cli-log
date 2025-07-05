@@ -1,0 +1,82 @@
+import * as pty from 'node-pty';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Terminal } from '@xterm/headless';
+
+const args = process.argv.slice(2);
+const command = args[0];
+const commandArgs = args.slice(1);
+
+if (!command) {
+  console.error('Usage: ai-cli-log <command> [args...]');
+  process.exit(1);
+}
+
+const logsDir = path.join(process.cwd(), '.ai-cli-logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir);
+}
+
+// Initialize xterm.js in headless mode
+const xterm = new Terminal({
+  rows: process.stdout.rows,
+  cols: process.stdout.columns,
+  allowProposedApi: true,
+});
+
+const term = pty.spawn(command, commandArgs, {
+  name: 'xterm-color',
+  cols: process.stdout.columns,
+  rows: process.stdout.rows,
+  cwd: process.cwd(),
+  env: process.env as { [key: string]: string; },
+});
+
+// Pipe pty output to xterm.js and also to stdout
+term.onData((data) => {
+  process.stdout.write(data);
+  xterm.write(data);
+});
+
+// Pipe stdin to pty
+process.stdin.on('data', (data) => {
+  term.write(data.toString());
+});
+
+process.stdin.setRawMode(true);
+process.stdin.resume();
+
+term.onExit(({ exitCode, signal }) => {
+  console.log(`\nChild process exited with code ${exitCode} and signal ${signal}`);
+
+  // Extract rendered text from xterm.js buffer
+  let renderedOutput = '';
+  for (let i = 0; i < xterm.buffer.active.length; i++) {
+    const line = xterm.buffer.active.getLine(i);
+    if (line) {
+      renderedOutput += line.translateToString(true) + '\n';
+    }
+  }
+
+  const logFileName = `session-${Date.now()}.md`;
+  const logFilePath = path.join(logsDir, logFileName);
+
+  fs.writeFile(logFilePath, renderedOutput, (err: NodeJS.ErrnoException | null) => {
+    if (err) {
+      console.error('Error writing log file:', err);
+    } else {
+      console.log(`Session logged to ${logFilePath}`);
+    }
+  });
+
+  process.exit(exitCode);
+});
+
+process.on('SIGINT', () => {
+  term.kill('SIGINT');
+});
+
+process.on('resize', () => {
+  term.resize(process.stdout.columns, process.stdout.rows);
+  xterm.resize(process.stdout.columns, process.stdout.rows);
+});
