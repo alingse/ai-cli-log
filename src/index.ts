@@ -21,6 +21,7 @@ if (!fs.existsSync(logsDir)) {
 const xterm = new Terminal({
   rows: process.stdout.rows,
   cols: process.stdout.columns,
+  scrollback: 0, // Re-enable scrollback: 0 for final screen content
   allowProposedApi: true,
 });
 
@@ -67,9 +68,8 @@ term.onExit(({ exitCode, signal }) => {
     } else {
       console.log(`Session logged to ${logFilePath}`);
     }
+    process.exit(exitCode);
   });
-
-  process.exit(exitCode);
 });
 
 process.on('SIGINT', () => {
