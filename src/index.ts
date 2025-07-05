@@ -70,7 +70,8 @@ term.onExit(({ exitCode, signal }) => {
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     const seconds = now.getSeconds().toString().padStart(2, '0');
-    const logFileName = `session-${year}${month}${day}-${hours}:${minutes}:${seconds}.md`;
+    const prefix = command || 'session';
+    const logFileName = `${prefix}-${year}${month}${day}-${hours}:${minutes}:${seconds}.md`;
     const logFilePath = path.join(logsDir, logFileName);
 
     fs.writeFile(logFilePath, renderedOutput, (err: NodeJS.ErrnoException | null) => {
