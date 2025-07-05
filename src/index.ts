@@ -18,17 +18,20 @@ if (!fs.existsSync(logsDir)) {
 }
 
 // Initialize xterm.js in headless mode
+const defaultRows = 24;
+const defaultCols = 80;
+
 const xterm = new Terminal({
-  rows: process.stdout.rows,
-  cols: process.stdout.columns,
+  rows: process.stdout.rows || defaultRows,
+  cols: process.stdout.columns || defaultCols,
   scrollback: Infinity, // Set scrollback to Infinity for unlimited buffer
   allowProposedApi: true,
 });
 
 const term = pty.spawn(command, commandArgs, {
   name: 'xterm-color',
-  cols: process.stdout.columns,
-  rows: process.stdout.rows,
+  cols: process.stdout.columns || defaultCols,
+  rows: process.stdout.rows || defaultRows,
   cwd: process.cwd(),
   env: process.env as { [key: string]: string; },
 });
@@ -40,18 +43,20 @@ term.onData((data) => {
 });
 
 // Pipe stdin to pty
-process.stdin.on('data', (data) => {
-  term.write(data.toString());
-});
+if (process.stdin.isTTY) {
+  process.stdin.on('data', (data) => {
+    term.write(data.toString());
+  });
 
-process.stdin.setRawMode(true);
-process.stdin.resume();
+  process.stdin.setRawMode(true);
+  process.stdin.resume();
+}
 
 term.onExit(({ exitCode, signal }) => {
   // Add a small delay to ensure xterm.js has processed all output
   setTimeout(() => {
     // Extract rendered text from xterm.js buffer
-    let renderedOutput = '';
+    let renderedOutputLines: string[] = [];
     // Iterate over the entire buffer, including scrollback.
     // The total number of lines is the sum of lines in scrollback (baseY) and visible rows.
     for (let i = 0; i < xterm.buffer.active.baseY + xterm.rows; i++) {
@@ -59,9 +64,12 @@ term.onExit(({ exitCode, signal }) => {
       if (line) {
         // translateToString(true) gets the line content, and we trim trailing whitespace.
         const lineText = line.translateToString(true).replace(/\s+$/, '');
-        renderedOutput += lineText + '\n';
+        if (lineText.length > 0) {
+          renderedOutputLines.push(lineText);
+        }
       }
     }
+    const renderedOutput = renderedOutputLines.join('\n');
 
     const now = new Date();
     const year = now.getFullYear();
@@ -73,6 +81,12 @@ term.onExit(({ exitCode, signal }) => {
     const prefix = command || 'session';
     const logFileName = `${prefix}-${year}${month}${day}-${hours}${minutes}${seconds}.txt`;
     const logFilePath = path.join(logsDir, logFileName);
+
+    if (renderedOutput.trim().length === 0) {
+      console.log('Session had no output, not saving log file.');
+      process.exit(exitCode);
+      return;
+    }
 
     fs.writeFile(logFilePath, renderedOutput, (err: NodeJS.ErrnoException | null) => {
       if (err) {

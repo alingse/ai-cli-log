@@ -42,8 +42,8 @@ Special thanks to Gemini for its invaluable help in the development of this tool
 ## TODO
 
 *   **Content Handling:**
-    *   Prevent saving empty log files when the session output is blank.
-    *   Address issues where insufficient content leads to large blank areas in the output.
+    *   Empty log files are now prevented from being saved when the session output is blank or contains only whitespace.
+    *   Trailing whitespace and blank lines are now trimmed from the output to address issues where insufficient content led to large blank areas.
 *   **Filename Convention:** The current timestamp-based filenames are functional but can be monotonous. Evaluate alternatives for more descriptive filenames, while carefully considering potential information leakage if AI summarization were to be used for naming.
 
 ---
