@@ -1,7 +1,7 @@
 {
   "name": "ai-cli-log",
   "version": "1.0.1",
-  "description": "Seamlessly log your AI-powered coding conversations. This command-line interface (CLI) tool captures your terminal   interactions with AI models like Gemini and Claude, saving entire sessions as clean Markdown documents for easy   review and documentation.",
+  "description": "Seamlessly log your AI-powered coding conversations. This command-line interface (CLI) tool captures your terminal   interactions with AI models like Gemini and Claude, saving entire sessions as clean plain text documents for easy   review and documentation.",
   "main": "dist/index.js",
   "bin": {
     "ai-cli-log": "bin/ai-cli-log.js"

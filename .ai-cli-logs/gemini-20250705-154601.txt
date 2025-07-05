@@ -185,7 +185,7 @@ Tips for getting started:
  │    npm error If you already provided a one-time password then it is likely that you either typoed          │
  │    npm error it, or it timed out. Please try again.                                                        │
  │    npm error A complete log of this run can be found in:                                                   │
- │    /Users/zhihu/.npm/_logs/2025-07-05T07_20_40_585Z-debug-0.log                                            │
+ │    /Users/xxx/.npm/_logs/2025-07-05T07_20_40_585Z-debug-0.log                                            │
  │                                                                                                            │
  ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ✦ 发布失败了。错误信息 EOTP 表明您的 npm 帐户启用了双重身份验证 (2FA)，因此在发布时需要提供一次性密码 (OTP)。
@@ -366,9 +366,9 @@ $ npm publish --otp=617135
 
   首先，我需要读取现有的 README.md 和 package.json 文件，以确保我是在正确的基础上进行修改。
  ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
- │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `/Users/zhihu/output/github/ai-cli-log/R… │
+ │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `/Users/xxx/output/github/ai-cli-log/R… │
  │                                                                                                                       │
- │    ### ReadManyFiles Result (Target Dir: `/Users/zhihu/output/github/ai-cli-log`)                                     │
+ │    ### ReadManyFiles Result (Target Dir: `/Users/xxx/output/github/ai-cli-log`)                                     │
  │                                                                                                                       │
  │    Successfully read and concatenated content from **2 file(s)**.                                                     │
  │                                                                                                                       │
@@ -1062,7 +1062,7 @@ $ npm publish --otp=617135
   步骤如下：
 
 
-   1. 在您的项目根目录 (`/Users/zhihu/output/github/ai-cli-log/`) 运行 `npm link`：
+   1. 在您的项目根目录 (`/Users/xxx/output/github/ai-cli-log/`) 运行 `npm link`：
       这将创建一个全局符号链接，指向您当前的本地项目。
 
 

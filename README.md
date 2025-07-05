@@ -1,6 +1,6 @@
 # ai-cli-log
 
-Seamlessly log your AI-powered coding conversations. This command-line interface (CLI) tool captures your terminal interactions with AI models like Gemini and Claude, saving entire sessions as clean Markdown documents for easy review and documentation.
+Seamlessly log your AI-powered coding conversations. This command-line interface (CLI) tool captures your terminal interactions with AI models like Gemini and Claude, saving entire sessions as clean plain text documents for easy review and documentation.
 
 ## Installation
 
@@ -10,7 +10,7 @@ npm install -g ai-cli-log
 
 ## Usage
 
-Wrap any command with `ai-cli-log` to start a logging session. The session will be saved to a Markdown file in the `.ai-cli-logs` directory.
+Wrap any command with `ai-cli-log` to start a logging session. The session will be saved to a plain text file in the `.ai-cli-logs` directory.
 
 For example, to log a session with Google's Gemini CLI (`gemini`):
 
@@ -18,19 +18,19 @@ For example, to log a session with Google's Gemini CLI (`gemini`):
 ai-cli-log gemini
 ```
 
-Or to log a session with another tool, like `claude`:
+Or to log a session with another tool, like `claude`:`
 
 ```bash
 ai-cli-log claude
 ```
 
-The recorded session will be saved to a file like `.ai-cli-logs/session-YYYYMMDD-HH:mm:ss.md`.
+The recorded session will be saved to a file like `.ai-cli-logs/session-YYYYMMDD-HH:mm:ss.txt`.
 
 ## Features
 
 *   **Interactive Session Capture:** Acts as a wrapper for other CLI tools, capturing full interactive sessions, including user input and the "rendered" output (what you actually see on the terminal after backspaces, cursor movements, etc.).
 *   **Accurate Logging:** Utilizes `node-pty` for pseudo-terminal emulation and `@xterm/headless` to parse ANSI escape codes, ensuring the captured log accurately reflects the final state of the terminal screen.
-*   **Markdown Output:** Saves recorded sessions as clean Markdown files for easy readability and documentation.
+*   **Plain Text Output:** Saves recorded sessions as clean plain text files for easy readability and documentation.
 *   **TypeScript Implementation:** Built with Node.js and TypeScript, leveraging a robust ecosystem for CLI development and type safety.
 
 ## Development Notes
@@ -41,7 +41,6 @@ Special thanks to Gemini for its invaluable help in the development of this tool
 
 ## TODO
 
-*   **Output Format:** Currently, the tool records raw screen text, which might not be ideal for Markdown, especially with box-drawing characters from AI models like Gemini. Consider offering an option to save as plain text (`.txt`) or improving Markdown compatibility for such outputs.
 *   **Content Handling:**
     *   Prevent saving empty log files when the session output is blank.
     *   Address issues where insufficient content leads to large blank areas in the output.
@@ -51,7 +50,7 @@ Special thanks to Gemini for its invaluable help in the development of this tool
 
 # ai-cli-log (中文说明)
 
-无缝记录您与 AI 进行的编程对话。本命令行工具 (CLI) 能捕获您在终端中与 Gemini、Claude 等 AI 模型的交互过程，并将整个会话保存为清晰的 Markdown 文档，便于后续查阅和归档。
+无缝记录您与 AI 进行的编程对话。本命令行工具 (CLI) 能捕获您在终端中与 Gemini、Claude 等 AI 模型的交互过程，并将整个会话保存为清晰的纯文本文档，便于后续查阅和归档。
 
 ## 安装
 
@@ -75,7 +74,7 @@ ai-cli-log gemini
 ai-cli-log claude
 ```
 
-记录的会话将保存为类似 `.ai-cli-logs/session-YYYYMMDD-HH:mm:ss.md` 的文件。
+记录的会话将保存为类似 `.ai-cli-logs/session-YYYYMMDD-HH:mm:ss.txt` 的文件。
 
 ## 快捷提示：使用别名
 
@@ -96,7 +95,7 @@ gemini-log
 
 *   **交互式会话捕获:** 作为其他 CLI 工具的包装器，能够捕获完整的交互式会话，包括用户输入和最终“渲染”在屏幕上的输出（即处理了退格、光标移动等控制字符后的真实显示内容）。
 *   **精确日志记录:** 利用 `node-pty` 进行伪终端模拟，并结合 `@xterm/headless` 解析 ANSI 转义码，确保日志精确还原终端的最终显示状态。
-*   **Markdown 输出:** 将会话保存为干净、易读的 Markdown 文件，方便查阅和整理。
+*   **纯文本输出:** 将会话保存为干净、易读的纯文本文件，方便查阅和整理。
 *   **TypeScript 实现:** 基于 Node.js 和 TypeScript 构建，确保了代码的健壮性和类型安全。
 
 ## 开发说明
@@ -105,17 +104,8 @@ gemini-log
 
 特别感谢 Gemini 在本项目开发过程中提供的宝贵帮助！
 
-## TODO
-
-*   **Output Format:** Currently, the tool records raw screen text, which might not be ideal for Markdown, especially with box-drawing characters from AI models like Gemini. Consider offering an option to save as plain text (`.txt`) or improving Markdown compatibility for such outputs.
-*   **Content Handling:**
-    *   Prevent saving empty log files when the session output is blank.
-    *   Address issues where insufficient content leads to large blank areas in the output.
-*   **Filename Convention:** The current timestamp-based filenames are functional but can be monotonous. Evaluate alternatives for more descriptive filenames, while carefully considering potential information leakage if AI summarization were to be used for naming.
-
 ## 待办事项 (TODO)
 
-*   **输出格式:** 目前工具记录的是原始屏幕文本，这对于 Markdown 来说可能不理想，特别是对于像 Gemini 这样的 AI 模型生成的框线字符。考虑提供一个选项，将其保存为纯文本 (`.txt`)，或者改进 Markdown 对此类输出的兼容性。
 *   **内容处理:**
     *   当会话输出为空时，避免保存空的日志文件。
     *   解决内容不足导致输出中出现大片空白的问题。

@@ -116,7 +116,7 @@ Tips for getting started:
  ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
  │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `.ai-cli-logs/0001.md`, `.ai-cli-logs/00… │
  │                                                                                                                       │
- │    ### ReadManyFiles Result (Target Dir: `/Users/zhihu/output/github/ai-cli-log`)                                     │
+ │    ### ReadManyFiles Result (Target Dir: `/Users/xxx/output/github/ai-cli-log`)                                     │
  │                                                                                                                       │
  │    Successfully read and concatenated content from **8 file(s)**.                                                     │
  │                                                                                                                       │
@@ -262,7 +262,7 @@ Tips for getting started:
  ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
  │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `.ai-cli-logs/gemini-20250705-154601.md`… │
  │                                                                                                                       │
- │    ### ReadManyFiles Result (Target Dir: `/Users/zhihu/output/github/ai-cli-log`)                                     │
+ │    ### ReadManyFiles Result (Target Dir: `/Users/xxx/output/github/ai-cli-log`)                                     │
  │                                                                                                                       │
  │    Successfully read and concatenated content from **8 file(s)**.                                                     │
  │                                                                                                                       │
