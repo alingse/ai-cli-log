@@ -21,7 +21,7 @@ if (!fs.existsSync(logsDir)) {
 const xterm = new Terminal({
   rows: process.stdout.rows,
   cols: process.stdout.columns,
-  scrollback: 0, // Re-enable scrollback: 0 for final screen content
+  scrollback: Infinity, // Set scrollback to Infinity for unlimited buffer
   allowProposedApi: true,
 });
 
@@ -48,25 +48,25 @@ process.stdin.setRawMode(true);
 process.stdin.resume();
 
 term.onExit(({ exitCode, signal }) => {
-  console.log(`\nChild process exited with code ${exitCode} and signal ${signal}`);
 
   // Extract rendered text from xterm.js buffer
-  let renderedOutput = '';
-  for (let i = 0; i < xterm.buffer.active.length; i++) {
-    const line = xterm.buffer.active.getLine(i);
-    if (line) {
-      renderedOutput += line.translateToString(true) + '\n';
-    }
-  }
+  let renderedOutput = '';  // Iterate over the entire buffer, including scrollback  for (let i = 0; i < xterm.buffer.active.baseY + xterm.rows; i++) {    const line = xterm.buffer.active.getLine(i);    if (line) {      renderedOutput += line.translateToString(true) + '\n';    }  }
 
-  const logFileName = `session-${Date.now()}.md`;
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  const logFileName = `session-${year}${month}${day}-${hours}:${minutes}:${seconds}.md`;
   const logFilePath = path.join(logsDir, logFileName);
 
   fs.writeFile(logFilePath, renderedOutput, (err: NodeJS.ErrnoException | null) => {
     if (err) {
       console.error('Error writing log file:', err);
     } else {
-      console.log(`Session logged to ${logFilePath}`);
+      console.log(`Session logged to ${path.relative(process.cwd(), logFilePath)}`);
     }
     process.exit(exitCode);
   });
