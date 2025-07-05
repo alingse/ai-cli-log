@@ -48,28 +48,40 @@ process.stdin.setRawMode(true);
 process.stdin.resume();
 
 term.onExit(({ exitCode, signal }) => {
-
-  // Extract rendered text from xterm.js buffer
-  let renderedOutput = '';  // Iterate over the entire buffer, including scrollback  for (let i = 0; i < xterm.buffer.active.baseY + xterm.rows; i++) {    const line = xterm.buffer.active.getLine(i);    if (line) {      renderedOutput += line.translateToString(true) + '\n';    }  }
-
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = (now.getMonth() + 1).toString().padStart(2, '0');
-  const day = now.getDate().toString().padStart(2, '0');
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  const logFileName = `session-${year}${month}${day}-${hours}:${minutes}:${seconds}.md`;
-  const logFilePath = path.join(logsDir, logFileName);
-
-  fs.writeFile(logFilePath, renderedOutput, (err: NodeJS.ErrnoException | null) => {
-    if (err) {
-      console.error('Error writing log file:', err);
-    } else {
-      console.log(`Session logged to ${path.relative(process.cwd(), logFilePath)}`);
+  // Add a small delay to ensure xterm.js has processed all output
+  setTimeout(() => {
+    // Extract rendered text from xterm.js buffer
+    let renderedOutput = '';
+    // Iterate over the entire buffer, including scrollback.
+    // The total number of lines is the sum of lines in scrollback (baseY) and visible rows.
+    for (let i = 0; i < xterm.buffer.active.baseY + xterm.rows; i++) {
+      const line = xterm.buffer.active.getLine(i);
+      if (line) {
+        // translateToString(true) gets the line content, and we trim trailing whitespace.
+        const lineText = line.translateToString(true).replace(/\s+$/, '');
+        renderedOutput += lineText + '\n';
+      }
     }
-    process.exit(exitCode);
-  });
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const logFileName = `session-${year}${month}${day}-${hours}:${minutes}:${seconds}.md`;
+    const logFilePath = path.join(logsDir, logFileName);
+
+    fs.writeFile(logFilePath, renderedOutput, (err: NodeJS.ErrnoException | null) => {
+      if (err) {
+        console.error('Error writing log file:', err);
+      } else {
+        console.log(`Session logged to ${path.relative(process.cwd(), logFilePath)}`);
+      }
+      process.exit(exitCode);
+    });
+  }, 500); // 500ms delay
 });
 
 process.on('SIGINT', () => {
