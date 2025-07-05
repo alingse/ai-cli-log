@@ -39,6 +39,14 @@ This project was generated with the assistance of Google Gemini. You can review 
 
 Special thanks to Gemini for its invaluable help in the development of this tool!
 
+## TODO
+
+*   **Output Format:** Currently, the tool records raw screen text, which might not be ideal for Markdown, especially with box-drawing characters from AI models like Gemini. Consider offering an option to save as plain text (`.txt`) or improving Markdown compatibility for such outputs.
+*   **Content Handling:**
+    *   Prevent saving empty log files when the session output is blank.
+    *   Address issues where insufficient content leads to large blank areas in the output.
+*   **Filename Convention:** The current timestamp-based filenames are functional but can be monotonous. Evaluate alternatives for more descriptive filenames, while carefully considering potential information leakage if AI summarization were to be used for naming.
+
 ---
 
 # ai-cli-log (中文说明)
@@ -96,3 +104,19 @@ gemini-log
 本项目是在 Google Gemini 的协助下生成的。您可以在 `.ai-cli-logs` 目录中查看详细的开发过程和交互记录，特别是从 `0001.md` 开始的日志文件。
 
 特别感谢 Gemini 在本项目开发过程中提供的宝贵帮助！
+
+## TODO
+
+*   **Output Format:** Currently, the tool records raw screen text, which might not be ideal for Markdown, especially with box-drawing characters from AI models like Gemini. Consider offering an option to save as plain text (`.txt`) or improving Markdown compatibility for such outputs.
+*   **Content Handling:**
+    *   Prevent saving empty log files when the session output is blank.
+    *   Address issues where insufficient content leads to large blank areas in the output.
+*   **Filename Convention:** The current timestamp-based filenames are functional but can be monotonous. Evaluate alternatives for more descriptive filenames, while carefully considering potential information leakage if AI summarization were to be used for naming.
+
+## 待办事项 (TODO)
+
+*   **输出格式:** 目前工具记录的是原始屏幕文本，这对于 Markdown 来说可能不理想，特别是对于像 Gemini 这样的 AI 模型生成的框线字符。考虑提供一个选项，将其保存为纯文本 (`.txt`)，或者改进 Markdown 对此类输出的兼容性。
+*   **内容处理:**
+    *   当会话输出为空时，避免保存空的日志文件。
+    *   解决内容不足导致输出中出现大片空白的问题。
+*   **文件名约定:** 当前基于时间戳的文件名虽然功能上可行，但可能过于单调。评估其他更具描述性的文件名方案，同时仔细考虑如果使用 AI 摘要进行命名可能导致的信息泄露问题。
