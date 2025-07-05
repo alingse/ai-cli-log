@@ -33,6 +33,12 @@ The recorded session will be saved to a file like `.ai-cli-logs/session-YYYYMMDD
 *   **Markdown Output:** Saves recorded sessions as clean Markdown files for easy readability and documentation.
 *   **TypeScript Implementation:** Built with Node.js and TypeScript, leveraging a robust ecosystem for CLI development and type safety.
 
+## Development Notes
+
+This project was generated with the assistance of Google Gemini. You can review the detailed development process and interactions in the `.ai-cli-logs` directory, specifically starting with `0001.md` and subsequent log files.
+
+Special thanks to Gemini for its invaluable help in the development of this tool!
+
 ---
 
 # ai-cli-log (中文说明)
@@ -84,3 +90,9 @@ gemini-log
 *   **精确日志记录:** 利用 `node-pty` 进行伪终端模拟，并结合 `@xterm/headless` 解析 ANSI 转义码，确保日志精确还原终端的最终显示状态。
 *   **Markdown 输出:** 将会话保存为干净、易读的 Markdown 文件，方便查阅和整理。
 *   **TypeScript 实现:** 基于 Node.js 和 TypeScript 构建，确保了代码的健壮性和类型安全。
+
+## 开发说明
+
+本项目是在 Google Gemini 的协助下生成的。您可以在 `.ai-cli-logs` 目录中查看详细的开发过程和交互记录，特别是从 `0001.md` 开始的日志文件。
+
+特别感谢 Gemini 在本项目开发过程中提供的宝贵帮助！
