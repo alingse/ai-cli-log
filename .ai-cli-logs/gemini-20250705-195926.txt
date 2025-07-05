@@ -1,0 +1,415 @@
+
+ ███            █████████  ██████████ ██████   ██████ █████ ██████   █████ █████
+░░░███         ███░░░░░███░░███░░░░░█░░██████ ██████ ░░███ ░░██████ ░░███ ░░███
+  ░░░███      ███     ░░░  ░███  █ ░  ░███░█████░███  ░███  ░███░███ ░███  ░███
+    ░░░███   ░███          ░██████    ░███░░███ ░███  ░███  ░███░░███░███  ░███
+     ███░    ░███    █████ ░███░░█    ░███ ░░░  ░███  ░███  ░███ ░░██████  ░███
+   ███░      ░░███  ░░███  ░███ ░   █ ░███      ░███  ░███  ░███  ░░█████  ░███
+ ███░         ░░█████████  ██████████ █████     █████ █████ █████  ░░█████ █████
+░░░            ░░░░░░░░░  ░░░░░░░░░░ ░░░░░     ░░░░░ ░░░░░ ░░░░░    ░░░░░ ░░░░░
+
+
+Tips for getting started:
+1. Ask questions, edit files, or run commands.
+2. Be specific for the best results.
+3. /help for more information.
+
+
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > │  > 请你阅读 README 并使用 git diff 读取当前 src/index.ts 的变更。我感觉修改的好像不太符合预期，但是我也不确定。请你研究一下。你可以可以阅读   │  │
+│    │    @.ai-cli-logs/gemini-20250705-193741.txt 看一下我们上一轮的会话。                                                                             │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `.ai-cli-logs/gemini-20250705-193741.txt` (within target directory: `/home/xxx/o… │
+ │                                                                                                                                                                │
+ │    ### ReadManyFiles Result (Target Dir: `/home/xxx/output/github/ai-cli-log`)                                                                                │
+ │                                                                                                                                                                │
+ │    Successfully read and concatenated content from **1 file(s)**.                                                                                              │
+ │                                                                                                                                                                │
+ │    **Processed Files:**                                                                                                                                        │
+ │    - `.ai-cli-logs/gemini-20250705-193741.txt`                                                                                                                 │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 好的，我明白了。根据您提供的上一轮会话日志，看起来我们尝试解决日志末尾出现大面积空白区域的问题，但最终的修改方案并不符合您的预期，您希望只移除末尾的连续空行，
+  而不是所有空行，以避免内容过于紧凑。
+
+
+  我会重新审视这个问题。首先，我会阅读 README.md 和当前的 src/index.ts 文件，然后检查 git 中的代码变更，以准确地理解当前的状况。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `README.md`, `src/index.ts` (within target directory: `/home/xxx/output/github/a… │
+ │                                                                                                                                                                │
+ │    ### ReadManyFiles Result (Target Dir: `/home/xxx/output/github/ai-cli-log`)                                                                                │
+ │                                                                                                                                                                │
+ │    Successfully read and concatenated content from **2 file(s)**.                                                                                              │
+ │                                                                                                                                                                │
+ │    **Processed Files:**                                                                                                                                        │
+ │    - `README.md`                                                                                                                                               │
+ │    - `src/index.ts`                                                                                                                                            │
+ │ ✔  Shell git diff HEAD~1 HEAD                                                                                                                                  │
+ │                                                                                                                                                                │
+ │    ... first 60 lines hidden ...                                                                                                                               │
+ │    +  process.stdin.setRawMode(true);                                                                                                                          │
+ │    +  process.stdin.resume();                                                                                                                                  │
+ │    +}                                                                                                                                                          │
+ │                                                                                                                                                                │
+ │     term.onExit(({ exitCode, signal }) => {                                                                                                                    │
+ │       // Add a small delay to ensure xterm.js has processed all output                                                                                         │
+ │       setTimeout(() => {                                                                                                                                       │
+ │         // Extract rendered text from xterm.js buffer                                                                                                          │
+ │    -    let renderedOutput = '';                                                                                                                               │
+ │    +    let renderedOutputLines: string[] = [];                                                                                                                │
+ │         // Iterate over the entire buffer, including scrollback.                                                                                               │
+ │         // The total number of lines is the sum of lines in scrollback (baseY) and visible rows.                                                               │
+ │         for (let i = 0; i < xterm.buffer.active.baseY + xterm.rows; i++) {                                                                                     │
+ │    @@ -59,9 +64,12 @@ term.onExit(({ exitCode, signal }) => {                                                                                                  │
+ │           if (line) {                                                                                                                                          │
+ │             // translateToString(true) gets the line content, and we trim trailing whitespace.                                                                 │
+ │             const lineText = line.translateToString(true).replace(/\s+$/, '');                                                                                 │
+ │    -        renderedOutput += lineText + '\n';                                                                                                                 │
+ │    +        if (lineText.length > 0) {                                                                                                                         │
+ │    +          renderedOutputLines.push(lineText);                                                                                                              │
+ │    +        }                                                                                                                                                  │
+ │           }                                                                                                                                                    │
+ │         }                                                                                                                                                      │
+ │    +    const renderedOutput = renderedOutputLines.join('\n');                                                                                                 │
+ │                                                                                                                                                                │
+ │         const now = new Date();                                                                                                                                │
+ │         const year = now.getFullYear();                                                                                                                        │
+ │    @@ -74,6 +82,12 @@ term.onExit(({ exitCode, signal }) => {                                                                                                  │
+ │         const logFileName = `${prefix}-${year}${month}${day}-${hours}${minutes}${seconds}.txt`;                                                                │
+ │         const logFilePath = path.join(logsDir, logFileName);                                                                                                   │
+ │                                                                                                                                                                │
+ │    +    if (renderedOutput.trim().length === 0) {                                                                                                              │
+ │    +      console.log('Session had no output, not saving log file.');                                                                                          │
+ │    +      process.exit(exitCode);                                                                                                                              │
+ │    +      return;                                                                                                                                              │
+ │    +    }                                                                                                                                                      │
+ │    +                                                                                                                                                           │
+ │         fs.writeFile(logFilePath, renderedOutput, (err: NodeJS.ErrnoException | null) => {                                                                     │
+ │           if (err) {                                                                                                                                           │
+ │             console.error('Error writing log file:', err);                                                                                                     │
+ │                                                                                                                                                                │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+ℹ ⚡ Slow response times detected. Automatically switching from gemini-2.5-pro to gemini-2.5-flash for faster responses for the remainder of this session.
+  ⚡ To avoid this you can either upgrade to Standard tier. See: https://goo.gle/set-up-gemini-code-assist
+  ⚡ Or you can utilize a Gemini API Key. See: https://goo.gle/gemini-cli-docs-auth#gemini-api-key
+  ⚡ You can switch authentication methods by typing /auth
+
+ℹ Request cancelled.
+
+
+╭──────────────────────────╮
+│  > 不是这个 是 git diff  │
+╰──────────────────────────╯
+
+ ╭─────────────────────────────────╮
+ │ ✔  Shell git diff src/index.ts  │
+ ╰─────────────────────────────────╯
+✦ git diff src/index.ts 返回空，表示 src/index.ts 没有未暂存的更改。为了确认用户提到的“修改”是否已提交，我将查看 src/index.ts 的最新提交记录及其补丁内容。
+ ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell git log -p -1 src/index.ts                                                                                                                  │
+ │                                                                                                                                                      │
+ │    commit 086c058ac5289d2041a6c8778c59b551fa324f78                                                                                                   │
+ │    Author: alingse <alingse@foxmail.com>                                                                                                             │
+ │    Date:   Sat Jul 5 19:16:30 2025 +0800                                                                                                             │
+ │                                                                                                                                                      │
+ │        feat: Improve log output handling and TTY robustness                                                                                          │
+ │                                                                                                                                                      │
+ │    diff --git a/src/index.ts b/src/index.ts                                                                                                          │
+ │    index 14ceb04..137dd32 100644                                                                                                                     │
+ │    --- a/src/index.ts                                                                                                                                │
+ │    +++ b/src/index.ts                                                                                                                                │
+ │    @@ -18,17 +18,20 @@ if (!fs.existsSync(logsDir)) {                                                                                                │
+ │     }                                                                                                                                                │
+ │                                                                                                                                                      │
+ │     // Initialize xterm.js in headless mode                                                                                                          │
+ │    +const defaultRows = 24;                                                                                                                          │
+ │    +const defaultCols = 80;                                                                                                                          │
+ │    +                                                                                                                                                 │
+ │     const xterm = new Terminal({                                                                                                                     │
+ │    -  rows: process.stdout.rows,                                                                                                                     │
+ │    -  cols: process.stdout.columns,                                                                                                                  │
+ │    +  rows: process.stdout.rows || defaultRows,                                                                                                      │
+ │    +  cols: process.stdout.columns || defaultCols,                                                                                                   │
+ │       scrollback: Infinity, // Set scrollback to Infinity for unlimited buffer                                                                       │
+ │       allowProposedApi: true,                                                                                                                        │
+ │     });                                                                                                                                              │
+ │                                                                                                                                                      │
+ │     const term = pty.spawn(command, commandArgs, {                                                                                                   │
+ │       name: 'xterm-color',                                                                                                                           │
+ │    -  cols: process.stdout.columns,                                                                                                                  │
+ │    -  rows: process.stdout.rows,                                                                                                                     │
+ │    +  cols: process.stdout.columns || defaultCols,                                                                                                   │
+ │    +  rows: process.stdout.rows || defaultRows,                                                                                                      │
+ │       cwd: process.cwd(),                                                                                                                            │
+ │       env: process.env as { [key: string]: string; },                                                                                                │
+ │     });                                                                                                                                              │
+ │    @@ -40,18 +43,20 @@ term.onData((data) => {                                                                                                       │
+ │     });                                                                                                                                              │
+ │                                                                                                                                                      │
+ │     // Pipe stdin to pty                                                                                                                             │
+ │    -process.stdin.on('data', (data) => {                                                                                                             │
+ │    -  term.write(data.toString());                                                                                                                   │
+ │    -});                                                                                                                                              │
+ │    +if (process.stdin.isTTY) {                                                                                                                       │
+ │    +  process.stdin.on('data', (data) => {                                                                                                           │
+ │    +    term.write(data.toString());                                                                                                                 │
+ │    +  });                                                                                                                                            │
+ │                                                                                                                                                      │
+ │    -process.stdin.setRawMode(true);                                                                                                                  │
+ │    -process.stdin.resume();                                                                                                                          │
+ │    +  process.stdin.setRawMode(true);                                                                                                                │
+ │    +  process.stdin.resume();                                                                                                                        │
+ │    +}                                                                                                                                                │
+ │                                                                                                                                                      │
+ │     term.onExit(({ exitCode, signal }) => {                                                                                                          │
+ │       // Add a small delay to ensure xterm.js has processed all output                                                                               │
+ │       setTimeout(() => {                                                                                                                             │
+ │         // Extract rendered text from xterm.js buffer                                                                                                │
+ │    -    let renderedOutput = '';                                                                                                                     │
+ │    +    let renderedOutputLines: string[] = [];                                                                                                      │
+ │         // Iterate over the entire buffer, including scrollback.                                                                                     │
+ │         // The total number of lines is the sum of lines in scrollback (baseY) and visible rows.                                                     │
+ │         for (let i = 0; i < xterm.buffer.active.baseY + xterm.rows; i++) {                                                                           │
+ │    @@ -59,9 +64,12 @@ term.onExit(({ exitCode, signal }) => {                                                                                        │
+ │           if (line) {                                                                                                                                │
+ │             // translateToString(true) gets the line content, and we trim trailing whitespace.                                                       │
+ │             const lineText = line.translateToString(true).replace(/\s+$/, '');                                                                       │
+ │    -        renderedOutput += lineText + '\n';                                                                                                       │
+ │    +        if (lineText.length > 0) {                                                                                                               │
+ │    +          renderedOutputLines.push(lineText);                                                                                                    │
+ │    +        }                                                                                                                                        │
+ │           }                                                                                                                                          │
+ │         }                                                                                                                                            │
+ │    +    const renderedOutput = renderedOutputLines.join('\n');                                                                                       │
+ │                                                                                                                                                      │
+ │         const now = new Date();                                                                                                                      │
+ │         const year = now.getFullYear();                                                                                                              │
+ │    @@ -74,6 +82,12 @@ term.onExit(({ exitCode, signal }) => {                                                                                        │
+ │         const logFileName = `${prefix}-${year}${month}${day}-${hours}${minutes}${seconds}.txt`;                                                      │
+ │         const logFilePath = path.join(logsDir, logFileName);                                                                                         │
+ │                                                                                                                                                      │
+ │    +    if (renderedOutput.trim().length === 0) {                                                                                                    │
+ │    +      console.log('Session had no output, not saving log file.');                                                                                │
+ │    +      process.exit(exitCode);                                                                                                                    │
+ │    +      return;                                                                                                                                    │
+ │    +    }                                                                                                                                            │
+ │    +                                                                                                                                                 │
+ │         fs.writeFile(logFilePath, renderedOutput, (err: NodeJS.ErrnoException | null) => {                                                           │
+ │           if (err) {                                                                                                                                 │
+ │             console.error('Error writing log file:', err);                                                                                           │
+ │                                                                                                                                                      │
+ ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 好的，我明白了。您希望撤销之前对 src/index.ts 的修改，即不再过滤掉所有空行，而是只移除末尾的连续空行，以避免内容过于紧凑。
+
+  我将按照以下步骤进行：
+
+
+   1. 撤销过滤空行的修改： 恢复 src/index.ts 中 lineText.length > 0 的判断，确保所有行（包括空行）都被添加到 renderedOutputLines 数组中。
+   2. 添加移除末尾空行的逻辑： 在 for 循环之后，但在将 renderedOutputLines 合并为 renderedOutput 之前，添加一个循环来移除 renderedOutputLines
+      数组末尾的空字符串。
+   3. 更新空输出检查： 确保 if (renderedOutput.trim().length === 0) 检查使用的是经过处理后的 renderedOutput。
+   4. 更新文件写入： 确保 fs.writeFile 使用的是经过处理后的 renderedOutput。
+   5. 重新构建项目。
+   6. 重新测试： 运行带有末尾空白和空行的命令，验证修改是否符合预期。
+   7. 更新 `README.md`： 反映新的处理逻辑。
+   8. 提交更改。
+
+
+  首先，我将撤销 lineText.length > 0 的过滤。为了确保 replace 操作的准确性，我将先读取 src/index.ts 的内容。
+ ╭───────────────────────────╮
+ │ ✔  ReadFile src/index.ts  │
+ ╰───────────────────────────╯
+✦ 好的，我明白了。您希望保留中间的空行，只去除末尾的连续空行。我将按照以下步骤进行：
+
+
+   1. 修改 `src/index.ts`：
+       * 将 renderedOutputLines.push(line.translateToString(true).replace(/\r/g, '').replace(/\s+$/, '')); 更改为
+         renderedOutputLines.push(line.translateToString(true));。
+       * 在 for 循环之后，但在移除末尾空行的 while 循环之前，添加一个 map 操作来处理 renderedOutputLines 中的每一行，移除回车符并修剪每行末尾的空白字符。
+   2. 重新构建项目。
+   3. 重新测试： 运行带有末尾空白和空行的命令，验证修改是否符合预期。
+   4. 更新 `README.md`： 反映新的处理逻辑。
+   5. 提交更改。
+
+
+  首先，我将修改 src/index.ts 中的 push 逻辑。
+ ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts:             renderedOutputLine... =>             renderedOutputLine...                                                         │
+ │                                                                                                                                                      │
+ │    63       const line = xterm.buffer.active.getLine(i);                                                                                             │
+ │    64       if (line) {                                                                                                                              │
+ │    65         // translateToString(true) gets the line content, and we trim trailing whitespace.                                                     │
+ │    66   -     renderedOutputLines.push(line.translateToString(true).replace(/\r/g, '').replace(/\s+$/, ''));                                         │
+ │    66   +     renderedOutputLines.push(line.translateToString(true));                                                                                │
+ │    67       }                                                                                                                                        │
+ │    68     }                                                                                                                                          │
+ │    69                                                                                                                                                │
+ ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 现在，我将在 for 循环之后，但在移除末尾空行的 while 循环之前，添加一个 map 操作来处理 renderedOutputLines 中的每一行，移除回车符并修剪每行末尾的空白字符。
+ ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts:     }... =>     }...                                                                                                           │
+ │                                                                                                                                                      │
+ │    67       }                                                                                                                                        │
+ │    68     }                                                                                                                                          │
+ │    69                                                                                                                                                │
+ │    70   + renderedOutputLines = renderedOutputLines.map(line => line.replace(/\r/g, '').replace(/\s+$/, ''));                                        │
+ │    71   +                                                                                                                                            │
+ │    72     // Remove trailing blank lines                                                                                                             │
+ │    73     while (renderedOutputLines.length > 0 && renderedOutputLines[renderedOutputLines.length - 1].trim() === '') {                              │
+ │    74       renderedOutputLines.pop();                                                                                                               │
+ ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 现在我已经修改了 src/index.ts，接下来我将重新构建项目。
+ ╭───────────────────────────────────────────────────────────────────╮
+ │ -  Shell npm run build (Build the project to apply the changes.)  │
+ ╰───────────────────────────────────────────────────────────────────╯
+
+╭────────────────────────────────────────────────────────────╮
+│  > 我觉得你改的还是不对啊，我需要的是真片的末尾的连续换行  │
+╰────────────────────────────────────────────────────────────╯
+
+✦ 我明白了，非常抱歉，我再次理解错了您的意思。您强调的是“末尾的连续换行”，这意味着您希望保留非空行中的所有内容，包括行尾的空格和回车符，只移除整个输出末尾的连续
+  空行。
+
+  我之前的修改确实没有完全满足您的要求，我将撤销不必要的行内修剪，并确保只处理末尾的空行。
+
+  我的新计划如下：
+
+
+   1. 撤销 `map` 操作： 移除 renderedOutputLines = renderedOutputLines.map(line => line.replace(/\r/g, '').replace(/\s+$/, ''));
+      这一行，因为它对所有行进行了不必要的修剪。
+   2. 确认 `push` 操作： 确保 renderedOutputLines.push(line.translateToString(true)); 这一行是正确的，它将原始行内容（包括行尾空格和回车符）添加到数组中。
+   3. 确认末尾空行移除逻辑： 现有的 while (renderedOutputLines.length > 0 && renderedOutputLines[renderedOutputLines.length - 1].trim() === '')
+      循环是正确的，它会移除数组末尾的空行。
+   4. 重新构建项目。
+   5. 重新测试： 运行一个带有末尾连续空行的命令，验证只有末尾的空行被移除，而其他行的内容保持不变。
+   6. 更新 `README.md`： 准确描述新的处理逻辑。
+   7. 提交更改。
+
+
+  首先，我将读取 src/index.ts 的内容，以便精确地进行修改。
+ ╭───────────────────────────╮
+ │ ✔  ReadFile src/index.ts  │
+ ╰───────────────────────────╯
+✦ 好的，我明白了。我将撤销之前对 renderedOutputLines 进行 map 操作的修改，确保只移除整个输出末尾的连续空行。
+
+
+  我将执行以下操作：
+ ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts:     renderedOutputLines = rend... =>     // Remove trailing blank l...                                                         │
+ │                                                                                                                                                      │
+ │    67       }                                                                                                                                        │
+ │    68     }                                                                                                                                          │
+ │    69                                                                                                                                                │
+ │    70   - renderedOutputLines = renderedOutputLines.map(line => line.replace(/\r/g, '').replace(/\s+$/, ''));                                        │
+ │    71   -                                                                                                                                            │
+ │    70     // Remove trailing blank lines                                                                                                             │
+ │    71     while (renderedOutputLines.length > 0 && renderedOutputLines[renderedOutputLines.length - 1].trim() === '') {                              │
+ │    72       renderedOutputLines.pop();                                                                                                               │
+ ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+ ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell npm run build (Build the project to apply the changes.)                                                                                     │
+ │                                                                                                                                                      │
+ │                                                                                                                                                      │
+ │    > ai-cli-log@1.0.1 build                                                                                                                          │
+ │    > tsc                                                                                                                                             │
+ │                                                                                                                                                      │
+ │                                                                                                                                                      │
+ ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 现在项目已经重新构建。接下来，我将运行一个测试命令，该命令会产生带有末尾连续空行的输出，以验证修改是否符合预期。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell bin/ai-cli-log.js bash -c "echo -e 'hello world   \nline 2\n\n\n'" (Run a command with trailing whitespace and blank lines using echo -e to test tri… │
+ │                                                                                                                                                                │
+                                                                                                                                             │
+                                                                                                                                                     │
+                                                                                                                                                           │
+                                                                                                                                                           │
+                                                                                                                                                           │
+ │    Session logged to .ai-cli-logs/bash-20250705-195857.txt                                                                                                     │
+ │                                                                                                                                                                │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✕ [API Error: request to https://cloudcode-pa.googleapis.com/v1internal:countTokens failed, reason: Client network socket disconnected before secure TLS
+  connection was established]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+╭───────────╮
+│  > /quit  │
+╰───────────╯
+
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                                                                              │
+│  Agent powering down. Goodbye!                                                                                                                                               │
+│                                                                                                                                                                              │
+│  Interaction Summary                                                                                                                                                         │
+│  Tool Calls:                 12 ( ✔ 11 ✖ 1 )                                                                                                                                 │
+│  Success Rate:               91.7%                                                                                                                                           │
+│  User Agreement:             87.5% (8 reviewed)                                                                                                                              │
+│                                                                                                                                                                              │
+│  Performance                                                                                                                                                                 │
+│  Wall Time:                  14m 35s                                                                                                                                         │
+│  Agent Active:               11m 56s                                                                                                                                         │
+│    » API Time:               1m 56s (16.3%)                                                                                                                                  │
+│    » Tool Time:              10m (83.7%)                                                                                                                                     │
+│                                                                                                                                                                              │
+│                                                                                                                                                                              │
+│  Model Usage                  Reqs   Input Tokens  Output Tokens                                                                                                             │
+│  ───────────────────────────────────────────────────────────────                                                                                                             │
+│  gemini-2.5-pro                  1         24,515            132                                                                                                             │
+│  gemini-2.5-flash               11        275,339          1,720                                                                                                             │
+│                                                                                                                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯

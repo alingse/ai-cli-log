@@ -63,12 +63,15 @@ term.onExit(({ exitCode, signal }) => {
       const line = xterm.buffer.active.getLine(i);
       if (line) {
         // translateToString(true) gets the line content, and we trim trailing whitespace.
-        const lineText = line.translateToString(true).replace(/\s+$/, '');
-        if (lineText.length > 0) {
-          renderedOutputLines.push(lineText);
-        }
+        renderedOutputLines.push(line.translateToString(true));
       }
     }
+
+    // Remove trailing blank lines
+    while (renderedOutputLines.length > 0 && renderedOutputLines[renderedOutputLines.length - 1].trim() === '') {
+      renderedOutputLines.pop();
+    }
+
     const renderedOutput = renderedOutputLines.join('\n');
 
     const now = new Date();
@@ -80,6 +83,7 @@ term.onExit(({ exitCode, signal }) => {
     const seconds = now.getSeconds().toString().padStart(2, '0');
     const prefix = command || 'session';
     const logFileName = `${prefix}-${year}${month}${day}-${hours}${minutes}${seconds}.txt`;
+
     const logFilePath = path.join(logsDir, logFileName);
 
     if (renderedOutput.trim().length === 0) {
