@@ -2,7 +2,31 @@
 
 Seamlessly log your AI-powered coding conversations. This command-line interface (CLI) tool captures your terminal interactions with AI models like Gemini and Claude, saving entire sessions as clean Markdown documents for easy review and documentation.
 
-## Features:
+## Installation
+
+```bash
+npm install -g ai-cli-log
+```
+
+## Usage
+
+Wrap any command with `ai-cli-log` to start a logging session. The session will be saved to a Markdown file in the `.ai-cli-logs` directory.
+
+For example, to log a session with Google's Gemini CLI (`gemini`):
+
+```bash
+ai-cli-log gemini
+```
+
+Or to log a session with another tool, like `claude`:
+
+```bash
+ai-cli-log claude
+```
+
+The recorded session will be saved to a file like `.ai-cli-logs/session-YYYYMMDD-HH:mm:ss.md`.
+
+## Features
 
 *   **Interactive Session Capture:** Acts as a wrapper for other CLI tools, capturing full interactive sessions, including user input and the "rendered" output (what you actually see on the terminal after backspaces, cursor movements, etc.).
 *   **Accurate Logging:** Utilizes `node-pty` for pseudo-terminal emulation and `@xterm/headless` to parse ANSI escape codes, ensuring the captured log accurately reflects the final state of the terminal screen.
@@ -11,13 +35,52 @@ Seamlessly log your AI-powered coding conversations. This command-line interface
 
 ---
 
-# ai-cli-log
+# ai-cli-log (中文说明)
 
-无缝记录您的 AI 驱动的编码对话。这个命令行界面 (CLI) 工具捕获您与 Gemini 和 Claude 等 AI 模型的终端交互，并将整个会话保存为整洁的 Markdown 文档，以便于回顾和归档。
+无缝记录您与 AI 进行的编程对话。本命令行工具 (CLI) 能捕获您在终端中与 Gemini、Claude 等 AI 模型的交互过程，并将整个会话保存为清晰的 Markdown 文档，便于后续查阅和归档。
 
-## 功能特点：
+## 安装
 
-*   **交互式会话捕获：** 作为其他 CLI 工具的包装器，捕获完整的交互式会话，包括用户输入和“渲染后”的输出（即在退格、光标移动等操作后您在终端上实际看到的内容）。
-*   **精确日志记录：** 利用 `node-pty` 进行伪终端模拟，并使用 `@xterm/headless` 解析 ANSI 转义码，确保捕获的日志准确反映终端屏幕的最终状态。
-*   **Markdown 输出：** 将记录的会话保存为整洁的 Markdown 文件，便于阅读和文档化。
-*   **TypeScript 实现：** 使用 Node.js 和 TypeScript 构建，利用强大的生态系统进行 CLI 开发和类型安全。
+```bash
+npm install -g ai-cli-log
+```
+
+## 使用方法
+
+使用 `ai-cli-log` 命令来包装任何您想记录的命令。会话日志将被保存到当前目录下的 `.ai-cli-logs` 文件夹中。
+
+例如，记录与 Google Gemini CLI (`gemini`) 的会话：
+
+```bash
+ai-cli-log gemini
+```
+
+或者记录与其他工具（如 `claude`）的会话：
+
+```bash
+ai-cli-log claude
+```
+
+记录的会话将保存为类似 `.ai-cli-logs/session-YYYYMMDD-HH:mm:ss.md` 的文件。
+
+## 快捷提示：使用别名
+
+为了简化您的工作流程，您可以为常用命令创建 shell 别名。例如，快速记录您的 Gemini CLI 会话：
+
+```bash
+alias gemini-log='ai-cli-log gemini'
+# 将此行添加到您的 shell 配置文件中（例如 ~/.bashrc, ~/.zshrc）
+```
+
+然后，您只需运行：
+
+```bash
+gemini-log
+```
+
+## 功能特性
+
+*   **交互式会话捕获:** 作为其他 CLI 工具的包装器，能够捕获完整的交互式会话，包括用户输入和最终“渲染”在屏幕上的输出（即处理了退格、光标移动等控制字符后的真实显示内容）。
+*   **精确日志记录:** 利用 `node-pty` 进行伪终端模拟，并结合 `@xterm/headless` 解析 ANSI 转义码，确保日志精确还原终端的最终显示状态。
+*   **Markdown 输出:** 将会话保存为干净、易读的 Markdown 文件，方便查阅和整理。
+*   **TypeScript 实现:** 基于 Node.js 和 TypeScript 构建，确保了代码的健壮性和类型安全。
