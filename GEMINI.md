@@ -25,7 +25,7 @@
 *   **文件结构:**
     *   `src/index.ts`: 包含主应用程序逻辑。
     *   `dist/`: 编译后的 JavaScript 输出目录。
-    *   `.ai-cli-logs/`: 用于存储生成的会话日志 Markdown 文件的目录。如果该目录不存在，则会自动创建。
+    *   `.ai-cli-log/`: 用于存储生成的会话日志 Markdown 文件的目录。如果该目录不存在，则会自动创建。
     *   `bin/`: 包含 CLI 工具的启动脚本。
 *   **日志格式:**
     *   **内容:** 日志文件捕获来自 `xterm/headless` 缓冲区的“渲染后”终端输出，真实地呈现用户所看到的内容。这包括所有交互元素、输入和输出。
@@ -35,6 +35,7 @@
     *   `scrollback: Infinity`: 确保捕获整个回滚缓冲区，而不仅仅是可见屏幕。
     *   `allowProposedApi: true`: 明确启用 `@xterm/headless` 中的实验性 API。
 *   **Polyfills:** 避免使用浏览器特定的 polyfills（如 `global.self` 或 `global.document` 模拟），如果存在 Node.js 原生或无头版本的库（例如，优先选择 `@xterm/headless` 而非 `xterm`）。
+*   **文档中的命令语法:** 在 `README.md` 等面向用户的文档中，即使在中文说明部分，命令的语法示例（例如 `ai-cli-log <command> [args...]`）也应保持英文，以确保技术上的精确性和一致性。
 
 ## 4. 开发工作流
 

@@ -10,28 +10,51 @@ npm install -g ai-cli-log
 
 ## Usage
 
-Wrap any command with `ai-cli-log` to start a logging session. The session will be saved to a plain text file in the `.ai-cli-logs` directory.
-
-For example, to log a session with Google's Gemini CLI (`gemini`):
+Wrap any command with `ai-cli-log` to start a logging session.
 
 ```bash
-ai-cli-log gemini
+ai-cli-log <command> [args...]
 ```
 
-Or to log a session with another tool, like `claude`:`
+**Examples:**
+
+- **Basic Logging:** Record a session with Google's Gemini CLI.
+  ```bash
+  ai-cli-log gemini
+  ```
+  *Logs are saved to the `.ai-cli-log/` directory.*
+
+- **AI-Powered Filenames:** Use an AI summary for the log's filename.
+  ```bash
+  ai-cli-log -s <command> [args...]
+  # or
+  ai-cli-log --with-summary <command> [args...]
+  ```
+  This will use your default summarizer to generate a descriptive filename like `gemini-20250713-153000-fix-database-connection-error.md`. You can also specify a summarizer: `ai-cli-log -s=my-ollama-summarizer ...`.
+
+## Configuration (`--init`)
+
+To use the AI summary feature, you first need to configure it. Run the interactive setup:
 
 ```bash
-ai-cli-log claude
+ai-cli-log --init
 ```
 
-The recorded session will be saved to a file like `.ai-cli-logs/session-YYYYMMDD-HH:mm:ss.txt`.
+This command will:
+1.  Scan for available AI tools on your system (like `gemini` or `ollama`).
+2.  Guide you through creating summarizer profiles for them.
+3.  Set a default summarizer.
+
+Configuration is saved to `.ai-cli-log/config.json` in the current directory. Use the `--local` flag to save to the global config at `~/.config/ai-cli-log/config.json`.
 
 ## Features
 
-*   **Interactive Session Capture:** Acts as a wrapper for other CLI tools, capturing full interactive sessions, including user input and the "rendered" output (what you actually see on the terminal after backspaces, cursor movements, etc.).
-*   **Accurate Logging:** Utilizes `node-pty` for pseudo-terminal emulation and `@xterm/headless` to parse ANSI escape codes, ensuring the captured log accurately reflects the final state of the terminal screen.
-*   **Plain Text Output:** Saves recorded sessions as clean plain text files for easy readability and documentation.
-*   **TypeScript Implementation:** Built with Node.js and TypeScript, leveraging a robust ecosystem for CLI development and type safety.
+*   **Interactive Session Capture:** Faithfully records complex interactive CLI sessions.
+*   **AI-Powered Summaries:** Automatically generates descriptive filenames from session content, making logs easy to find and identify.
+*   **Accurate Rendering:** Uses `@xterm/headless` to interpret ANSI escape codes, ensuring the log accurately reflects the final terminal state (spinners, progress bars, etc.).
+*   **Configurable:** Supports different AI backends (`gemini`, `ollama`, etc.) for generating summaries.
+*   **Performance-Aware:** When summarizing long sessions, it intelligently samples the beginning and end of the output to ensure fast and cost-effective summary generation.
+*   **Markdown Output:** Saves sessions as clean Markdown files.
 
 ## Development Notes
 
@@ -60,43 +83,51 @@ npm install -g ai-cli-log
 
 ## 使用方法
 
-使用 `ai-cli-log` 命令来包装任何您想记录的命令。会话日志将被保存到当前目录下的 `.ai-cli-logs` 文件夹中。
-
-例如，记录与 Google Gemini CLI (`gemini`) 的会话：
+使用 `ai-cli-log` 命令来包装任何您想记录的命令。
 
 ```bash
-ai-cli-log gemini
+ai-cli-log <command> [args...]
 ```
 
-或者记录与其他工具（如 `claude`）的会话：
+**示例:**
+
+- **基本日志记录:** 记录与 Google Gemini CLI 的会话。
+  ```bash
+  ai-cli-log gemini
+  ```
+  *日志将保存到 `.ai-cli-log/` 目录中。*
+
+- **AI 驱动的文件名:** 使用 AI 摘要作为日志文件名。
+  ```bash
+  ai-cli-log -s <命令> [参数...]
+  # 或
+  ai-cli-log --with-summary <命令> [参数...]
+  ```
+  这将使用您的默认摘要器生成一个描述性的文件名，例如 `gemini-20250713-153000-fix-database-connection-error.md`。您也可以指定一个摘要器：`ai-cli-log -s=my-ollama-summarizer ...`。
+
+## 配置 (`--init`)
+
+要使用 AI 摘要功能，您首先需要进行配置。运行交互式设置命令：
 
 ```bash
-ai-cli-log claude
+ai-cli-log --init
 ```
 
-记录的会话将保存为类似 `.ai-cli-logs/session-YYYYMMDD-HH:mm:ss.txt` 的文件。
+该命令将：
+1.  扫描您系统上可用的 AI 工具（如 `gemini` 或 `ollama`）。
+2.  引导您为这些工具创建摘要器配置。
+3.  设置一个默认的摘要器。
 
-## 快捷提示：使用别名
-
-为了简化您的工作流程，您可以为常用命令创建 shell 别名。例如，快速记录您的 Gemini CLI 会话：
-
-```bash
-alias gemini-log='ai-cli-log gemini'
-# 将此行添加到您的 shell 配置文件中（例如 ~/.bashrc, ~/.zshrc）
-```
-
-然后，您只需运行：
-
-```bash
-gemini-log
-```
+配置默认保存在当前目录的 `.ai-cli-log/config.json` 中。使用 `--local` 标志可将其保存到全局配置 `~/.config/ai-cli-log/config.json`。
 
 ## 功能特性
 
-*   **交互式会话捕获:** 作为其他 CLI 工具的包装器，能够捕获完整的交互式会话，包括用户输入和最终“渲染”在屏幕上的输出（即处理了退格、光标移动等控制字符后的真实显示内容）。
-*   **精确日志记录:** 利用 `node-pty` 进行伪终端模拟，并结合 `@xterm/headless` 解析 ANSI 转义码，确保日志精确还原终端的最终显示状态。
-*   **纯文本输出:** 将会话保存为干净、易读的纯文本文件，方便查阅和整理。
-*   **TypeScript 实现:** 基于 Node.js 和 TypeScript 构建，确保了代码的健壮性和类型安全。
+*   **交互式会话捕获:** 忠实地记录复杂的交互式 CLI 会话。
+*   **AI 驱动的摘要:** 从会话内容中自动生成描述性文件名，使日志易于查找和识别。
+*   **精确渲染:** 使用 `@xterm/headless` 解释 ANSI 转义码，确保日志准确反映最终的终端状态（如加载动画、进度条等）。
+*   **可配置:** 支持不同的 AI 后端（`gemini`, `ollama` 等）用于生成摘要。
+*   **性能感知:** 在总结长会话时，它会智能地抽样输出的开头和结尾，以确保快速且经济高效地生成摘要。
+*   **Markdown 输出:** 将会话保存为清晰的 Markdown 文件。
 
 ## 开发说明
 
