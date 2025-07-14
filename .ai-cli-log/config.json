@@ -4,14 +4,14 @@
       {
         "name": "gemini-pro",
         "tool": "gemini",
-        "prompt": "CRITICAL: Your response MUST be ONLY a 3-5 word, lowercase, filename-friendly phrase summarizing the user's actions in the following terminal session. DO NOT include any other words, explanations, or introductory phrases. Examples of valid responses: \"refactor-database-schema\", \"fix-login-bug\", \"install-new-dependencies\". Your entire output should be just the phrase. The session content is:",
+        "prompt": "You are a log summarizer. Your response MUST be a valid JSON object with one key: \"summary\" (a 3-5 word, lowercase, filename-friendly phrase). Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
         "maxLines": 100
       },
       {
         "name": "ollama",
         "tool": "ollama",
         "model": "llama3",
-        "prompt": "CRITICAL: Your response MUST be ONLY a 3-5 word, lowercase, filename-friendly phrase summarizing the user's actions in the following terminal session. DO NOT include any other words, explanations, or introductory phrases. Examples of valid responses: \"refactor-database-schema\", \"fix-login-bug\", \"install-new-dependencies\". Your entire output should be just the phrase. The session content is:",
+        "prompt": "You are a log summarizer. Your response MUST be a valid JSON object with one key: \"summary\" (a 3-5 word, lowercase, filename-friendly phrase). Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
         "maxLines": 50
       },
       {
@@ -23,10 +23,10 @@
           "session-summary",
           "\"{{prompt}}\""
         ],
-        "prompt": "CRITICAL: Your response MUST be ONLY a 3-5 word, lowercase, filename-friendly phrase summarizing the user's actions in the following terminal session. DO NOT include any other words, explanations, or introductory phrases. Examples of valid responses: \"refactor-database-schema\", \"fix-login-bug\", \"install-new-dependencies\". Your entire output should be just the phrase. The session content is:",
+        "prompt": "You are a log summarizer. Your response MUST be a valid JSON object with one key: \"summary\" (a 3-5 word, lowercase, filename-friendly phrase). Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
         "maxLines": 100
       }
     ],
-    "default": "sgpt"
+    "default": "ollama"
   }
 }
