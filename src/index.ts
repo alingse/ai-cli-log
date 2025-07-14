@@ -103,7 +103,7 @@ async function handleInitCommand(isLocal: boolean) {
 
         const config = readConfig();
         const summarizersToUpdate: Summarizer[] = [];
-        const newPrompt = 'CRITICAL: Your response MUST be ONLY a 3-5 word, lowercase, filename-friendly phrase summarizing the user\'s actions in the following terminal session. DO NOT include any other words, explanations, or introductory phrases. Examples of valid responses: "refactor-database-schema", "fix-login-bug", "install-new-dependencies". Your entire output should be just the phrase. The session content is:';
+        const newPrompt = 'You are a log summarizer. Your response MUST be a valid JSON object with one key: "summary" (a 3-5 word, lowercase, filename-friendly phrase). Example: {"summary": "refactor-database-schema"}. The session content is:';
 
         if (availableTools.includes('gemini')) {
             const add = await ask('\n> Found Gemini. Add/update the \'gemini-pro\' summarizer? (Y/n): ');
@@ -325,19 +325,32 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
 
             if (summaryArg) {
                 const startTime = Date.now();
-                const rawSummary = await getAiSummary(renderedOutput, typeof summaryArg === 'string' ? summaryArg : undefined);
+                const rawSummaryJson = await getAiSummary(renderedOutput, typeof summaryArg === 'string' ? summaryArg : undefined);
                 const endTime = Date.now();
-                if (rawSummary) {
+
+                if (rawSummaryJson) {
                     const duration = (endTime - startTime) / 1000;
                     const config = readConfig();
                     const summarizerName = (typeof summaryArg === 'string' ? summaryArg : config.summarizer.default) || 'default';
                     
-                    const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-                    const slug = slugify(rawSummary).split('-').slice(0, 10).join('-');
+                    try {
+                        const summaryData = JSON.parse(rawSummaryJson);
+                        const slug = summaryData.summary;
 
-                    console.log(`\nSummary by ${summarizerName} (took ${duration.toFixed(1)}s): "${slug}"`);
+                        if (typeof slug !== 'string') {
+                            throw new Error('Invalid JSON structure from summarizer: "summary" key is missing or not a string.');
+                        }
 
-                    logFileName = `${prefix}-${timestamp}-${slug}.txt`;
+                        console.log(`\nSummary by ${summarizerName} (took ${duration.toFixed(1)}s): "${slug}"`);
+                        logFileName = `${prefix}-${timestamp}-${slug}.txt`;
+
+                    } catch (e) {
+                        console.error(`\nError parsing summary JSON from ${summarizerName}. Using raw output as fallback.`);
+                        console.error(`Raw output: ${rawSummaryJson}`);
+                        const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                        const slug = slugify(rawSummaryJson).split('-').slice(0, 10).join('-');
+                        logFileName = `${prefix}-${timestamp}-${slug}.txt`;
+                    }
                 }
             }
 
