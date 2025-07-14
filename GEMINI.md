@@ -29,8 +29,8 @@
     *   `bin/`: 包含 CLI 工具的启动脚本。
 *   **日志格式:**
     *   **内容:** 日志文件捕获来自 `xterm/headless` 缓冲区的“渲染后”终端输出，真实地呈现用户所看到的内容。这包括所有交互元素、输入和输出。
-    *   **格式:** Markdown (`.md`) 文件，便于阅读和文档化。
-    *   **文件名约定:** `[command_prefix]-YYYYMMDD-HHMMSS.md`。`command_prefix` 来自于被包装的命令（例如 `gemini`、`claude`），如果未提供命令，则默认为 `session`。时间戳使用 `YYYYMMDD-HHMMSS` 格式（不含冒号），以提高 URL 友好性。
+    *   **格式:** 当前为纯文本 (`.txt`) 文件。未来计划支持 Markdown (`.md`) 以提供更丰富的渲染能力。
+    *   **文件名约定:** 基础格式为 `[command_prefix]-YYYYMMDD-HHMMSS.txt`。当使用 `-s` 或 `--with-summary` 标志启用 AI 摘要时，文件名将扩展为 `[command_prefix]-YYYYMMDD-HHMMSS-[summary_slug].txt`。其中 `[summary_slug]` 是由配置的 AI 摘要器（支持 `gemini`, `ollama`, `claude`, `sgpt` 及自定义脚本）根据会话内容生成的、由连字符分隔的简短描述（例如 `fix-database-error`）。`command_prefix` 来自于被包装的命令（例如 `gemini`、`claude`），如果未提供命令，则默认为 `session`。时间戳使用 `YYYYMMDD-HHMMSS` 格式（不含冒号），以提高 URL 友好性。
 *   **Xterm.js 配置:**
     *   `scrollback: Infinity`: 确保捕获整个回滚缓冲区，而不仅仅是可见屏幕。
     *   `allowProposedApi: true`: 明确启用 `@xterm/headless` 中的实验性 API。

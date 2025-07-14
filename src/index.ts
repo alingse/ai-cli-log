@@ -81,8 +81,8 @@ async function handleInitCommand(isLocal: boolean) {
         }
 
         console.log('\nScanning for available AI tools...');
-        const availableTools: ('gemini' | 'ollama' | 'sgpt')[] = [];
-        const checkTool = (tool: 'gemini' | 'ollama' | 'sgpt') => new Promise<void>(resolve => {
+        const availableTools: ('gemini' | 'ollama' | 'sgpt' | 'claude')[] = [];
+        const checkTool = (tool: 'gemini' | 'ollama' | 'sgpt' | 'claude') => new Promise<void>(resolve => {
             const proc = spawn('which', [tool], { stdio: 'ignore' });
             proc.on('close', code => {
                 if (code === 0) {
@@ -94,10 +94,17 @@ async function handleInitCommand(isLocal: boolean) {
             proc.on('error', () => resolve());
         });
 
-        await Promise.all([checkTool('gemini'), checkTool('ollama'), checkTool('sgpt')]);
+        await Promise.all([checkTool('gemini'), checkTool('ollama'), checkTool('sgpt'), checkTool('claude')]);
 
         if (availableTools.length === 0) {
-            console.log('No supported AI tools (gemini, ollama, sgpt) found in your PATH.');
+            console.log('No supported AI tools (gemini, ollama, sgpt, claude) found in your PATH.');
+            const createEmpty = await ask('\n> Would you like to create an empty configuration file to manually add a custom summarizer? (y/N): ');
+            if (createEmpty.toLowerCase() === 'y') {
+                const config = readConfig(); // Read to not overwrite existing unrelated config
+                writeConfig(config, isLocal);
+            } else {
+                console.log('Initialization cancelled.');
+            }
             return;
         }
 
@@ -128,6 +135,18 @@ async function handleInitCommand(isLocal: boolean) {
                     model: model,
                     prompt: newPrompt,
                     maxLines: 50,
+                });
+            }
+        }
+
+        if (availableTools.includes('claude')) {
+            const add = await ask('\n> Found Claude. Add/update the \'claude-opus\' summarizer? (Y/n): ');
+            if (add.toLowerCase() !== 'n') {
+                summarizersToUpdate.push({
+                    name: 'claude-opus',
+                    tool: 'claude',
+                    prompt: newPrompt,
+                    maxLines: 100,
                 });
             }
         }
@@ -164,7 +183,7 @@ async function handleInitCommand(isLocal: boolean) {
 
         // Set default only if it wasn't set before
         if (!config.summarizer.default && config.summarizer.summarizers.length > 0) {
-            const priority = ['gemini-pro', 'ollama', 'sgpt'];
+            const priority = ['gemini-pro', 'claude-opus', 'ollama', 'sgpt'];
             for (const name of priority) {
                 if (config.summarizer.summarizers.some(s => s.name === name)) {
                     config.summarizer.default = name;
@@ -218,6 +237,10 @@ async function getAiSummary(content: string, summarizerName?: string): Promise<s
             break;
         case 'gemini':
             command = ['gemini', '-p', prompt];
+            inputForStdin = sampledContent;
+            break;
+        case 'claude':
+            command = ['claude', '-p', prompt];
             inputForStdin = sampledContent;
             break;
         case 'custom':
@@ -377,6 +400,13 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
 
 function main() {
     const args = process.argv.slice(2);
+
+    if (args.includes('--version') || args.includes('-v')) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const pkg = require('../package.json');
+        console.log(pkg.version);
+        return;
+    }
 
     if (args.includes('--init')) {
         const isLocal = args.includes('--local');
