@@ -84,6 +84,7 @@ Here is an example of a manual `config.json`:
         "name": "sgpt",
         "tool": "custom",
         "command": ["sgpt", "--chat", "session-summary", "\"{{prompt}}\""]
+      },
 
 *   **To create a global configuration file (at `~/.config/ai-cli-log/config.json`):**
     ```bash
@@ -111,16 +112,14 @@ This command will:
 
 ## Development Notes
 
-This project was generated with the assistance of Google Gemini. You can review the detailed development process and interactions in the `.ai-cli-logs` directory, specifically starting with `0001.md` and subsequent log files.
+This project was generated with the assistance of Google Gemini. You can review the detailed development process and interactions in the `.ai-cli-log` directory, specifically starting with `0001.txt` and subsequent log files.
 
 Special thanks to Gemini for its invaluable help in the development of this tool!
 
 ## TODO
 
-*   **Content Handling:**
-    *   Empty log files are now prevented from being saved when the session output is blank or contains only whitespace.
-    *   Trailing whitespace and blank lines are now trimmed from the output to address issues where insufficient content led to large blank areas.
-*   **Filename Convention:** The current timestamp-based filenames are functional but can be monotonous. Evaluate alternatives for more descriptive filenames, while carefully considering potential information leakage if AI summarization were to be used for naming.
+*   **Argument Parsing:** Refactor the manual argument parsing to use a robust library like `yargs` or `commander` to improve maintainability and provide standard features like `--help`.
+*   **Markdown Support:** Investigate and potentially implement saving logs in Markdown format, which could include session metadata (e.g., command, timestamp, summary) in a frontmatter block.
 
 ---
 
@@ -216,8 +215,8 @@ ai-cli-log <command> [args...]
       {
         "name": "my-custom-summarizer",
         "tool": "custom",
-        "command": ["/path/to/your/custom_script.sh", "--input", "stdin"],
-        "prompt": "请为我总结这个会话。你的响应应该是一个包含 'summary' 键的 JSON 对象。",
+        "command": ["my-summarizer-script", "--prompt", "{{prompt}}"],
+        "prompt": "You are a log summarizer. Your response MUST be a valid JSON object with one key: \"summary\" (a 3-5 word, lowercase, filename-friendly phrase). Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
         "maxLines": 200
       }
     ]
@@ -229,16 +228,34 @@ ai-cli-log <command> [args...]
 
 *   `summarizer.default` (可选): 默认使用的摘要器配置名称。
 *   `summarizer.summarizers`: 包含不同摘要器配置的数组。
-    *   **`name`**: 您为摘要器配置指定的唯一名称 (例如, `gemini-pro`, `ollama`, `sgpt`, `my-custom-summarizer`)。
+    *   **`name`**: 您为摘要器配置指定的唯一名称 (例如, `gemini-pro`, `ollama`, `claude-opus`, `my-custom-summarizer`)。
     *   **`tool`**: 指定摘要器使用的工具类型。
         *   `gemini`: 使用 `gemini` CLI 工具。
         *   `ollama`: 使用 `ollama` CLI 工具。
+        *   `claude`: 使用 `claude` CLI 工具。
         *   `custom`: 使用自定义命令。
     *   **`model`** (可选): 对于 `ollama` 工具，指定要使用的模型名称 (例如, `llama3`)。
     *   **`prompt`**: 传递给摘要器命令的提示。会话内容将作为标准输入传递。
     *   **`maxLines`** (可选): 限制传递给摘要器的会话内容行数。如果会话内容超过此限制，将只采样开头和结尾的行。
-    *   **`command`** (可选): 对于 `custom` 工具，指定要执行的命令数组。例如 `["sgpt", "--chat", "session-summary", ""{{prompt}}""]`。`{{prompt}}` 占位符将被实际的提示替换。
+    *   **`command`** (可选): 对于 `custom` 工具，指定要执行的命令数组。会话内容会通过管道传递给该命令的 `stdin`。`{{prompt}}` 占位符将被实际的提示字符串替换。例如: `["my-summarizer-script", "--prompt", "{{prompt}}"]`。
     *   **重要**: 摘要器的输出**必须**是一个有效的 JSON 对象，其中包含一个名为 `summary` 的键（例如，`{"summary": "你的摘要短语"}`）。
+```
+
+**Field Descriptions:**
+
+*   `summarizer.default` (optional): The name of the default summarizer configuration to use.
+*   `summarizer.summarizers`: An array of different summarizer configurations.
+    *   **`name`**: A unique name you give to the summarizer configuration (e.g., `gemini-pro`, `ollama`, `claude-opus`, `my-custom-summarizer`).
+    *   **`tool`**: The type of tool the summarizer uses.
+        *   `gemini`: Uses the `gemini` CLI tool.
+        *   `ollama`: Uses the `ollama` CLI tool.
+        *   `claude`: Uses the `claude` CLI tool.
+        *   `custom`: Uses a custom command.
+    *   **`model`** (optional): For the `ollama` tool, specifies the model name to use (e.g., `llama3`).
+    *   **`prompt`**: The prompt passed to the summarizer command. The session content will be passed as standard input.
+    *   **`maxLines`** (optional): Limits the number of session content lines passed to the summarizer. If the session exceeds this limit, only the beginning and end lines will be sampled.
+    *   **`command`** (optional): For the `custom` tool, specifies the command array to execute. The session content is piped to this command's `stdin`. The `{{prompt}}` placeholder will be replaced with the actual prompt string. Example: `["my-summarizer-script", "--prompt", "{{prompt}}"]`.
+    *   **Important**: The output from the summarizer **MUST** be a valid JSON object containing a key named `summary` (e.g., `{"summary": "your-summary-phrase"}`).
 
 ### 交互式设置 (`--init`)
 
