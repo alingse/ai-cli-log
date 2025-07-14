@@ -65,53 +65,65 @@ function writeConfig(config: AppConfig, isLocal: boolean) {
 // --- 2. COMMAND IMPLEMENTATIONS ---
 
 async function handleInitCommand(isLocal: boolean) {
-    console.log('Scanning for available AI tools...');
-    const availableTools: ('gemini' | 'ollama' | 'sgpt')[] = [];
-    const checkTool = (tool: 'gemini' | 'ollama' | 'sgpt') => new Promise<void>(resolve => {
-        const proc = spawn('which', [tool], { stdio: 'ignore' });
-        proc.on('close', code => {
-            if (code === 0) {
-                console.log(`  - Found ${tool}!`);
-                availableTools.push(tool);
-            }
-            resolve();
-        });
-        proc.on('error', () => resolve());
-    });
-
-    await Promise.all([checkTool('gemini'), checkTool('ollama'), checkTool('sgpt')]);
-
-    if (availableTools.length === 0) {
-        console.log('No supported AI tools (gemini, ollama, sgpt) found in your PATH.');
-        return;
-    }
-
+    const targetPath = isLocal ? LOCAL_CONFIG_PATH : GLOBAL_CONFIG_PATH;
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     const ask = (question: string) => new Promise<string>(resolve => rl.question(question, resolve));
 
-    const newSummarizers: Summarizer[] = [];
-    const newPrompt = 'CRITICAL: Your response MUST be ONLY a 3-5 word, lowercase, filename-friendly phrase summarizing the user\'s actions in the following terminal session. DO NOT include any other words, explanations, or introductory phrases. Examples of valid responses: "refactor-database-schema", "fix-login-bug", "install-new-dependencies". Your entire output should be just the phrase. The session content is:'
-
-    if (availableTools.includes('gemini')) {
-        const add = await ask('\n> Create a summarizer configuration for Gemini? (Y/n): ');
-        if (add.toLowerCase() !== 'n') {
-            newSummarizers.push({
-                name: 'gemini-pro',
-                tool: 'gemini',
-                prompt: newPrompt,
-                maxLines: 100,
-            });
+    try {
+        if (fs.existsSync(targetPath)) {
+            const warning = `Configuration file already exists. Continuing will allow you to add or update default summarizers (gemini-pro, ollama, sgpt) with the latest recommended settings, while preserving any other custom summarizers you have added.`;
+            console.log(warning);
+            const answer = await ask('Do you want to continue? (y/N): ');
+            if (answer.toLowerCase() !== 'y') {
+                console.log('Initialization cancelled.');
+                return;
+            }
         }
-    }
 
-    if (availableTools.includes('ollama')) {
-        const add = await ask('\n> Create a summarizer configuration for Ollama? (Y/n): ');
-        if (add.toLowerCase() !== 'n') {
-            const modelInput = await ask('  - Which Ollama model to use? (press Enter for \'llama3\'): ');
-            const model = modelInput || 'llama3';
-            if (model) {
-                newSummarizers.push({
-                    name: `ollama-${model}`,
+        console.log('\nScanning for available AI tools...');
+        const availableTools: ('gemini' | 'ollama' | 'sgpt')[] = [];
+        const checkTool = (tool: 'gemini' | 'ollama' | 'sgpt') => new Promise<void>(resolve => {
+            const proc = spawn('which', [tool], { stdio: 'ignore' });
+            proc.on('close', code => {
+                if (code === 0) {
+                    console.log(`  - Found ${tool}!`);
+                    availableTools.push(tool);
+                }
+                resolve();
+            });
+            proc.on('error', () => resolve());
+        });
+
+        await Promise.all([checkTool('gemini'), checkTool('ollama'), checkTool('sgpt')]);
+
+        if (availableTools.length === 0) {
+            console.log('No supported AI tools (gemini, ollama, sgpt) found in your PATH.');
+            return;
+        }
+
+        const config = readConfig();
+        const summarizersToUpdate: Summarizer[] = [];
+        const newPrompt = 'CRITICAL: Your response MUST be ONLY a 3-5 word, lowercase, filename-friendly phrase summarizing the user\'s actions in the following terminal session. DO NOT include any other words, explanations, or introductory phrases. Examples of valid responses: "refactor-database-schema", "fix-login-bug", "install-new-dependencies". Your entire output should be just the phrase. The session content is:';
+
+        if (availableTools.includes('gemini')) {
+            const add = await ask('\n> Found Gemini. Add/update the \'gemini-pro\' summarizer? (Y/n): ');
+            if (add.toLowerCase() !== 'n') {
+                summarizersToUpdate.push({
+                    name: 'gemini-pro',
+                    tool: 'gemini',
+                    prompt: newPrompt,
+                    maxLines: 100,
+                });
+            }
+        }
+
+        if (availableTools.includes('ollama')) {
+            const add = await ask('\n> Found Ollama. Add/update the \'ollama\' summarizer? (Y/n): ');
+            if (add.toLowerCase() !== 'n') {
+                const modelInput = await ask('  - Which Ollama model to use? (press Enter for \'llama3\'): ');
+                const model = modelInput || 'llama3';
+                summarizersToUpdate.push({
+                    name: 'ollama',
                     tool: 'ollama',
                     model: model,
                     prompt: newPrompt,
@@ -119,53 +131,53 @@ async function handleInitCommand(isLocal: boolean) {
                 });
             }
         }
-    }
-    
-    if (availableTools.includes('sgpt')) {
-        const add = await ask('\n> Create a summarizer configuration for ShellGPT (sgpt)? (Y/n): ');
-        if (add.toLowerCase() !== 'n') {
-            newSummarizers.push({
-                name: 'sgpt',
-                tool: 'custom',
-                command: ['sgpt', '--chat', 'session-summary', '"{{prompt}}"'],
-                prompt: newPrompt,
-                maxLines: 100,
-            });
+        
+        if (availableTools.includes('sgpt')) {
+            const add = await ask('\n> Found ShellGPT. Add/update the \'sgpt\' summarizer? (Y/n): ');
+            if (add.toLowerCase() !== 'n') {
+                summarizersToUpdate.push({
+                    name: 'sgpt',
+                    tool: 'custom',
+                    command: ['sgpt', '--chat', 'session-summary', '"{{prompt}}"'],
+                    prompt: newPrompt,
+                    maxLines: 100,
+                });
+            }
         }
-    }
 
+        if (summarizersToUpdate.length === 0) {
+            console.log('\nNo configurations were added or updated.');
+            return;
+        }
 
-    if (newSummarizers.length === 0) {
-        console.log('No new configurations were added.');
+        // "Update-or-add" logic
+        summarizersToUpdate.forEach(newS => {
+            const existingIndex = config.summarizer.summarizers.findIndex(s => s.name === newS.name);
+            if (existingIndex !== -1) {
+                config.summarizer.summarizers[existingIndex] = newS; // Update
+                console.log(`  - Updated existing summarizer: "${newS.name}"`);
+            } else {
+                config.summarizer.summarizers.push(newS); // Add
+                console.log(`  - Added new summarizer: "${newS.name}"`);
+            }
+        });
+
+        // Set default only if it wasn't set before
+        if (!config.summarizer.default && config.summarizer.summarizers.length > 0) {
+            const priority = ['gemini-pro', 'ollama', 'sgpt'];
+            for (const name of priority) {
+                if (config.summarizer.summarizers.some(s => s.name === name)) {
+                    config.summarizer.default = name;
+                    console.log(`\n✔ Set "${config.summarizer.default}" as the default summarizer.`);
+                    break;
+                }
+            }
+        }
+
+        writeConfig(config, isLocal);
+    } finally {
         rl.close();
-        return;
     }
-
-    const config = readConfig();
-    const existingNames = new Set(config.summarizer.summarizers.map(s => s.name));
-    const mergedSummarizers = [...config.summarizer.summarizers];
-    newSummarizers.forEach(s => {
-        if (!existingNames.has(s.name)) mergedSummarizers.push(s);
-    });
-    config.summarizer.summarizers = mergedSummarizers;
-
-    if (newSummarizers.length === 1 && !config.summarizer.default) {
-        config.summarizer.default = newSummarizers[0].name;
-        console.log(`\nSetting "${newSummarizers[0].name}" as the default summarizer.`);
-    } else if (newSummarizers.length > 1) {
-        console.log('\nThe following summarizers are now configured:');
-        mergedSummarizers.forEach((s, i) => console.log(`${i + 1}. ${s.name}`));
-        const choiceStr = await ask('Which one would you like to set as the default? (Enter a number, or press Enter for none): ');
-        const choice = parseInt(choiceStr, 10);
-        if (choice > 0 && choice <= mergedSummarizers.length) {
-            const chosenName = mergedSummarizers[choice - 1].name;
-            config.summarizer.default = chosenName;
-            console.log(`✔ Default summarizer set to "${chosenName}".`);
-        }
-    }
-
-    rl.close();
-    writeConfig(config, isLocal);
 }
 
 async function getAiSummary(content: string, summarizerName?: string): Promise<string | null> {
