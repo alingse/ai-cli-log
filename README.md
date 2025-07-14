@@ -10,27 +10,27 @@ npm install -g ai-cli-log
 
 ## Usage
 
-Wrap any command with `ai-cli-log` to start a logging session.
+Wrap any command with `ai-cli-log` to start a logging session. The core structure is:
 
 ```bash
-ai-cli-log <command> [args...]
+ai-cli-log [global-options] run <command-to-log> [args...]
 ```
 
 **Examples:**
 
 - **Basic Logging:** Record a session with Google's Gemini CLI.
   ```bash
-  ai-cli-log gemini
+  ai-cli-log run gemini
   ```
   *Logs are saved to the `.ai-cli-log/` directory.*
 
-- **AI-Powered Filenames:** Use an AI summary for the log's filename.
+- **AI-Powered Filenames:** Use an AI summary for the log's filename. The `-s` or `--with-summary` option must come **before** the `run` command.
   ```bash
-  ai-cli-log -s <command> [args...]
-  # or
-  ai-cli-log --with-summary <command> [args...]
+  ai-cli-log -s run <command> [args...]
+  # or specify a summarizer
+  ai-cli-log --with-summary=gemini-pro run <command> [args...]
   ```
-  This will use your default summarizer to generate a descriptive filename like `gemini-20250713-153000-fix-database-connection-error.md`. You can also specify a summarizer: `ai-cli-log -s=my-ollama-summarizer ...`.
+  This will use your default (or specified) summarizer to generate a descriptive filename like `gemini-20250713-153000-fix-database-connection-error.md`.
 
 ## Configuration
 
@@ -42,19 +42,19 @@ ai-cli-log <command> [args...]
 
 You can create these files manually or by using the interactive setup command.
 
-### Interactive Setup (`--init`)
+### Interactive Setup (`init`)
 
-The `--init` command helps you create a configuration file.
+The `init` command helps you create a configuration file.
 
 *   **To create a global configuration:**
     ```bash
-    ai-cli-log --init
+    ai-cli-log init
     ```
     This saves the configuration to `~/.config/ai-cli-log/config.json`.
 
 *   **To create a local (project-specific) configuration:**
     ```bash
-    ai-cli-log --init --local
+    ai-cli-log init --local
     ```
     This saves the configuration to `.ai-cli-log/config.json` in the current directory.
 
@@ -118,7 +118,6 @@ Special thanks to Gemini for its invaluable help in the development of this tool
 
 ## TODO
 
-*   **Argument Parsing:** Refactor the manual argument parsing to use a robust library like `yargs` or `commander` to improve maintainability and provide standard features like `--help`.
 *   **Markdown Support:** Investigate and potentially implement saving logs in Markdown format, which could include session metadata (e.g., command, timestamp, summary) in a frontmatter block.
 
 ---
@@ -135,27 +134,27 @@ npm install -g ai-cli-log
 
 ## 使用方法
 
-使用 `ai-cli-log` 命令来包装任何您想记录的命令。
+使用 `ai-cli-log` 命令来包装任何您想记录的命令。核心结构是：
 
 ```bash
-ai-cli-log <command> [args...]
+ai-cli-log [全局选项] run <要记录的命令> [参数...]
 ```
 
 **示例:**
 
 - **基本日志记录:** 记录与 Google Gemini CLI 的会话。
   ```bash
-  ai-cli-log gemini
+  ai-cli-log run gemini
   ```
   *日志将保存到 `.ai-cli-log/` 目录中。*
 
-- **AI 驱动的文件名:** 使用 AI 摘要作为日志文件名。
+- **AI 驱动的文件名:** 使用 AI 摘要作为日志文件名。`-s` 或 `--with-summary` 选项必须在 `run` 命令**之前**。
   ```bash
-  ai-cli-log -s <命令> [参数...]
-  # 或
-  ai-cli-log --with-summary <命令> [参数...]
+  ai-cli-log -s run <命令> [参数...]
+  # 或指定一个摘要器
+  ai-cli-log --with-summary=gemini-pro run <命令> [参数...]
   ```
-  这将使用您的默认摘要器生成一个描述性的文件名，例如 `gemini-20250713-153000-fix-database-connection-error.md`。您也可以指定一个摘要器：`ai-cli-log -s=my-ollama-summarizer ...`。
+  这将使用您默认（或指定）的摘要器生成一个描述性的文件名，例如 `gemini-20250713-153000-fix-database-connection-error.md`。
 
 ## 配置
 
@@ -167,19 +166,19 @@ ai-cli-log <command> [args...]
 
 您可以通过手动或使用交互式设置命令来创建这些文件。
 
-### 交互式设置 (`--init`)
+### 交互式设置 (`init`)
 
-`--init` 命令可以帮助您创建配置文件。
+`init` 命令可以帮助您创建配置文件。
 
 *   **创建全局配置文件:**
     ```bash
-    ai-cli-log --init
+    ai-cli-log init
     ```
-    这会将配置保存到 `~/.config/ai-cli-log/config.json`。
+    This saves the configuration to `~/.config/ai-cli-log/config.json`.
 
 *   **创建本地（项目特定）配置文件:**
     ```bash
-    ai-cli-log --init --local
+    ai-cli-log init --local
     ```
     这会将配置保存到当前目录的 `.ai-cli-log/config.json` 中。
 
