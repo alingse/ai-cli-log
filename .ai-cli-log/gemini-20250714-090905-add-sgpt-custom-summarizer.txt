@@ -1,0 +1,284 @@
+███            █████████  ██████████ ██████   ██████ █████ ██████   █████ █████
+░░░███         ███░░░░░███░░███░░░░░█░░██████ ██████ ░░███ ░░██████ ░░███ ░░███
+  ░░░███      ███     ░░░  ░███  █ ░  ░███░█████░███  ░███  ░███░███ ░███  ░███
+    ░░░███   ░███          ░██████    ░███░░███ ░███  ░███  ░███░░███░███  ░███
+     ███░    ░███    █████ ░███░░█    ░███ ░░░  ░███  ░███  ░███ ░░██████  ░███
+   ███░      ░░███  ░░███  ░███ ░   █ ░███      ░███  ░███  ░███  ░░█████  ░███
+ ███░         ░░█████████  ██████████ █████     █████ █████ █████  ░░█████ █████
+░░░            ░░░░░░░░░  ░░░░░░░░░░ ░░░░░     ░░░░░ ░░░░░ ░░░░░    ░░░░░ ░░░░░
+
+
+Tips for getting started:
+1. Ask questions, edit files, or run commands.
+2. Be specific for the best results.
+3. /help for more information.
+
+
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > 推荐一款流行的 shellgpt 吧，这样我可以用来作为 ai 总结的的配置，请你阅读 src/index.ts 了解一下。  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+✦ 好的，我来阅读一下 src/index.ts，然后为您推荐一款流行的 "shellgpt" 工具，并说明如何结合使用。
+ ╭───────────────────────────╮
+ │ ✔  ReadFile src/index.ts  │
+ ╰───────────────────────────╯
+✦ 好的，我已经阅读了 src/index.ts 的代码。
+
+
+  这个脚本设计得非常灵活，它通过一个配置文件来管理不同的 AI 工具作为“总结器”（Summarizer）。目前，它原生支持 gemini
+  和 ollama。为了使用像 shell-gpt 这样的工具，我们可以利用 custom 这个工具类型，但这需要对代码进行一些小小的增强。
+
+  推荐的 ShellGPT: shell-gpt
+
+  我推荐 **shell-gpt** (https://github.com/TheR1D/shell-gpt)。它非常流行、功能强大且易于安装和使用。
+
+
+   * 安装: pip install shell-gpt
+   * 命令: sgpt
+   * 优点: 支持多种后端（OpenAI, Azure, Ollama 等），功能丰富，可以通过参数和配置文件进行高度定制。
+
+  如何集成到 ai-cli-log
+
+
+  为了让 ai-cli-log 能调用 sgpt 或其他自定义命令，我需要对 src/index.ts 进行两处修改：
+
+
+   1. 更新 `Summarizer` 接口：为 custom 类型的 Summarizer 添加一个 command 字段，用于定义要执行的命令模板。
+   2. 增强 `getAiSummary` 函数：添加一个 case 来处理 custom 类型的工具，使其能够执行在 command 字段中定义的命令。
+
+  我现在就来执行这些修改。
+
+
+ ╭───────────────────────────────────────────────────────────────────────────────╮
+ │ -  Edit src/index.ts: interface Summarizer {... => interface Summarizer {...  │
+ ╰───────────────────────────────────────────────────────────────────────────────╯
+
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > 那你补充 --init 时，补充一个 sgpt 的选项吧，并根据这个 json {                                                     │
+│      "summarizer": {                                                                                                 │
+│        "summarizers": [                                                                                              │
+│          {                                                                                                           │
+│            "name": "gemini-pro",                                                                                     │
+│            "tool": "gemini",                                                                                         │
+│            "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase,                   │
+│    filename-friendly phrase, example: \"a-quick-gemini-test\" \"typescript-check-pass\", the session       content   │
+│    is:",                                                                                                             │
+│            "maxLines": 100                                                                                           │
+│          },                                                                                                          │
+│          {                                                                                                           │
+│            "name": "ollama-llama3",                                                                                  │
+│            "tool": "ollama",                                                                                         │
+│            "model": "llama3",                                                                                        │
+│            "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase,                   │
+│    filename-friendly phrase (e.g., \"refactor-database-schema\", \"fix-login-bug\"). The session content       is:", │
+│            "maxLines": 50                                                                                            │
+│          }                                                                                                           │
+│        ],                                                                                                            │
+│        "default": "gemini-pro"                                                                                       │
+│      }                                                                                                               │
+│    }  请你补充。                                                                                                     │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+
+✦ 好的，我明白了。我将更新 --init 命令，使其能够检测 sgpt 并提供一个配置选项。同时，我会增强 ai-cli-log 以支持像 sgpt
+  这样的自定义命令。
+
+
+  首先，我对 src/index.ts 进行必要的修改，以支持自定义总结器。
+ ╭───────────────────────────╮
+ │ ✔  ReadFile src/index.ts  │
+ ╰───────────────────────────╯
+✦ 好的，我将对 src/index.ts 进行修改，以支持 sgpt 并更新 --init 流程。
+
+  第一步：增强 `Summarizer` 接口
+
+
+  我将为 Summarizer 接口添加一个可选的 command 字段，用于支持自定义工具。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts: interface Summarizer {... => interface Summarizer {...                               │
+ │                                                                                                            │
+ │    20         model?: string;                                                                              │
+ │    21         prompt: string;                                                                              │
+ │    22         maxLines?: number;                                                                           │
+ │    23   +     command?: string[]; // For custom tools, e.g., ["sgpt", "--prompt", "{{prompt}}"]            │
+ │    24     }                                                                                                │
+ │    25                                                                                                      │
+ │    26     interface AppConfig {                                                                            │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 现在，我将修改 getAiSummary 函数以处理 custom 工具类型。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts:     const { tool, model, promp... =>     const { tool, model, promp...               │
+ │                                                                                                            │
+ │    172    }                                                                                                │
+ │    173                                                                                                     │
+ │    174                                                                                                     │
+ │    175  - const { tool, model, prompt, maxLines = 0 } = summarizer;                                        │
+ │    175  + const { tool, model, prompt, maxLines = 0, command: customCommand } = summarizer;                │
+ │    176                                                                                                     │
+ │    177    let sampledContent = content;                                                                    │
+ │    178    const lines = content.split('\n');                                                               │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    195            command = ['gemini', '-p', prompt];                                                      │
+ │    196            inputForStdin = sampledContent;                                                          │
+ │    197            break;                                                                                   │
+ │    198  +     case 'custom':                                                                               │
+ │    199  +         if (!customCommand) {                                                                    │
+ │    200  +             console.error(`Custom summarizer "${name}" is missing the "command" definition.`);   │
+ │    201  +             return null;                                                                         │
+ │    202  +         }                                                                                        │
+ │    203  +         command = customCommand.map(arg => arg.replace('{{prompt}}', prompt));                   │
+ │    204  +         inputForStdin = sampledContent;                                                          │
+ │    205  +         break;                                                                                   │
+ │    206        default:                                                                                     │
+ │    207            console.error(`Tool "${tool}" is not directly supported yet.`);                          │
+ │    208            return null;                                                                             │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 最后，我将更新 handleInitCommand 函数以在初始化时包含 sgpt 选项。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts: async function handleInitComma... => async function handleInitComma...               │
+ │                                                                                                            │
+ │    66                                                                                                      │
+ │    67     async function handleInitCommand(isLocal: boolean) {                                             │
+ │    68         console.log('Scanning for available AI tools...');                                           │
+ │    69   -     const availableTools: ('gemini' | 'ollama')[] = [];                                          │
+ │    70   -     const checkTool = (tool: 'gemini' | 'ollama') => new Promise<void>(resolve => {              │
+ │    69   +     const availableTools: ('gemini' | 'ollama' | 'sgpt')[] = [];                                 │
+ │    70   +     const checkTool = (tool: 'gemini' | 'ollama' | 'sgpt') => new Promise<void>(resolve => {     │
+ │    71             const proc = spawn('which', [tool], { stdio: 'ignore' });                                │
+ │    72             proc.on('close', code => {                                                               │
+ │    73                 if (code === 0) {                                                                    │
+ │    79             proc.on('error', () => resolve());                                                       │
+ │    80         });                                                                                          │
+ │    81                                                                                                      │
+ │    82   -     await Promise.all([checkTool('gemini'), checkTool('ollama')]);                               │
+ │    82   +     await Promise.all([checkTool('gemini'), checkTool('ollama'), checkTool('sgpt')]);            │
+ │    83                                                                                                      │
+ │    84         if (availableTools.length === 0) {                                                           │
+ │    85   -         console.log('No supported AI tools (gemini, ollama) found in your PATH.');               │
+ │    85   +         console.log('No supported AI tools (gemini, ollama, sgpt) found in your PATH.');         │
+ │    86             return;                                                                                  │
+ │    87         }                                                                                            │
+ │    88                                                                                                      │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    97                 newSummarizers.push({                                                                │
+ │    98                     name: 'gemini-pro',                                                              │
+ │    99                     tool: 'gemini',                                                                  │
+ │    100  -                 prompt: 'Summarize the following terminal session into a 3-5 word, lowercase,    │
+ │           filename-friendly phrase:',                                                                      │
+ │    101  -                 maxLines: 150,                                                                   │
+ │    100  +                 prompt: 'Summarize the following terminal session into a 3-5 english word,       │
+ │           lowercase, filename-friendly phrase, example: "a-quick-gemini-test" "typescript-check-pass",     │
+ │           the session       content is:',                                                                  │
+ │    101  +                 maxLines: 100,                                                                   │
+ │    102                });                                                                                  │
+ │    103            }                                                                                        │
+ │    104        }                                                                                            │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    113                        name: `ollama-${model}`,                                                     │
+ │    114                        tool: 'ollama',                                                              │
+ │    115                        model: model,                                                                │
+ │    116  -                     prompt: 'Provide a very short summary (3-5 words, lowercase,                 │
+ │           filename-friendly) for this session:',                                                           │
+ │    117  -                     maxLines: 200,                                                               │
+ │    116  +                     prompt: 'Summarize the following terminal session into a 3-5 english word,   │
+ │           lowercase,       filename-friendly phrase (e.g., "refactor-database-schema", "fix-login-bug").   │
+ │           The session content       is:',                                                                  │
+ │    117  +                     maxLines: 50,                                                                │
+ │    118                    });                                                                              │
+ │    119                }                                                                                    │
+ │    120            }                                                                                        │
+ │    121        }                                                                                            │
+ │    122                                                                                                     │
+ │    123  +     if (availableTools.includes('sgpt')) {                                                       │
+ │    124  +         const add = await ask('\n> Create a summarizer configuration for ShellGPT (sgpt)?        │
+ │           (Y/n): ');                                                                                       │
+ │    125  +         if (add.toLowerCase() !== 'n') {                                                         │
+ │    126  +             newSummarizers.push({                                                                │
+ │    127  +                 name: 'sgpt-default',                                                            │
+ │    128  +                 tool: 'custom',                                                                  │
+ │    129  +                 command: ['sgpt', '--no-animation', '--chat', 'session-summary',                 │
+ │           '"{{prompt}}"'],                                                                                 │
+ │    130  +                 prompt: 'Summarize the following terminal session into a 3-5 english word,       │
+ │           lowercase, filename-friendly phrase (e.g., "refactor-database-schema", "fix-login-bug"). The     │
+ │           session content is:',                                                                            │
+ │    131  +                 maxLines: 100,                                                                   │
+ │    132  +             });                                                                                  │
+ │    133  +         }                                                                                        │
+ │    134  +     }                                                                                            │
+ │    135  +                                                                                                  │
+ │    136  +                                                                                                  │
+ │    137        if (newSummarizers.length === 0) {                                                           │
+ │    138            console.log('No new configurations were added.');                                        │
+ │    139            rl.close();                                                                              │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 我已经成功地更新了 src/index.ts 文件。现在 ai-cli-log 具备了以下能力：
+
+
+   1. 支持自定义命令：可以通过 tool: 'custom' 和 command: [...] 来配置任何外部 CLI 工具作为总结器。
+   2. 集成 `sgpt`：在执行 ai-cli-log --init 时，如果系统中安装了 sgpt，它将自动被检测到，并提示用户创建一个默认的 sgpt
+      配置。
+
+
+  接下来，我将根据您提供的 JSON 内容，为您生成一个配置文件。由于您希望在本地项目中使用此配置，我将把它写入
+  .ai-cli-log/config.json。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  WriteFile Writing to .ai-cli-log/config.json                                                            │
+ │                                                                                                            │
+ │     1 {                                                                                                    │
+ │     2   "summarizer": {                                                                                    │
+ │     3     "summarizers": [                                                                                 │
+ │     4       {                                                                                              │
+ │     5         "name": "gemini-pro",                                                                        │
+ │     6         "tool": "gemini",                                                                            │
+ │     7         "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase,      │
+ │       filename-friendly phrase, example: \"a-quick-gemini-test\" \"typescript-check-pass\", the session    │
+ │       content is:",                                                                                        │
+ │     8         "maxLines": 100                                                                              │
+ │     9       },                                                                                             │
+ │    10       {                                                                                              │
+ │    11         "name": "ollama-llama3",                                                                     │
+ │    12         "tool": "ollama",                                                                            │
+ │    13         "model": "llama3",                                                                           │
+ │    14         "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase,      │
+ │       filename-friendly phrase (e.g., \"refactor-database-schema\", \"fix-login-bug\"). The session        │
+ │       content       is:",                                                                                  │
+ │    15         "maxLines": 50                                                                               │
+ │    16       }                                                                                              │
+ │    17     ],                                                                                               │
+ │    18     "default": "gemini-pro"                                                                          │
+ │    19   }                                                                                                  │
+ │    20 }                                                                                                    │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 配置文件已成功写入。
+
+
+  现在，您可以运行 npm run build 来编译新的 TypeScript 代码，然后通过 ai-cli-log --init 来体验新的 sgpt 配置流程。
+
+
+  如果您还有其他问题或需要进一步的修改，请随时告诉我。
+
+╭───────────╮
+│  > /quit  │
+╰───────────╯
+
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                                │
+│  Agent powering down. Goodbye!                                                                                                 │
+│                                                                                                                                │
+│  Interaction Summary                                                                                                           │
+│  Tool Calls:                 7 ( ✔ 6 ✖ 1 )                                                                                     │
+│  Success Rate:               85.7%                                                                                             │
+│  User Agreement:             50.0% (2 reviewed)                                                                                │
+│                                                                                                                                │
+│  Performance                                                                                                                   │
+│  Wall Time:                  8m 46s                                                                                            │
+│  Agent Active:               4m 24s                                                                                            │
+│    » API Time:               1m 51s (42.0%)                                                                                    │
+│    » Tool Time:              2m 33s (58.0%)                                                                                    │
+│                                                                                                                                │
+│                                                                                                                                │
+│  Model Usage                  Reqs   Input Tokens  Output Tokens                                                               │
+│  ───────────────────────────────────────────────────────────────                                                               │
+│  gemini-2.5-pro                  8        124,940          3,444                                                               │
+│                                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯

@@ -1,0 +1,110 @@
+███            █████████  ██████████ ██████   ██████ █████ ██████   █████ █████
+░░░███         ███░░░░░███░░███░░░░░█░░██████ ██████ ░░███ ░░██████ ░░███ ░░███
+  ░░░███      ███     ░░░  ░███  █ ░  ░███░█████░███  ░███  ░███░███ ░███  ░███
+    ░░░███   ░███          ░██████    ░███░░███ ░███  ░███  ░███░░███░███  ░███
+     ███░    ░███    █████ ░███░░█    ░███ ░░░  ░███  ░███  ░███ ░░██████  ░███
+   ███░      ░░███  ░░███  ░███ ░   █ ░███      ░███  ░███  ░███  ░░█████  ░███
+ ███░         ░░█████████  ██████████ █████     █████ █████ █████  ░░█████ █████
+░░░            ░░░░░░░░░  ░░░░░░░░░░ ░░░░░     ░░░░░ ░░░░░ ░░░░░    ░░░░░ ░░░░░
+
+
+Tips for getting started:
+1. Ask questions, edit files, or run commands.
+2. Be specific for the best results.
+3. /help for more information.
+
+
+╭──────────────────────────────────────────────────────────────╮
+│  > 检查一下项目里面的README.md 你可以将支持 sgpt 的说明一下  │
+╰──────────────────────────────────────────────────────────────╯
+
+✦ 好的，我来检查一下 README.md 文件，并根据 sgpt 的功能添加相应的说明。
+
+
+  首先，我需要阅读 README.md 和 src/index.ts 文件，以了解当前的文档结构和 sgpt 的具体实现方式。
+ ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `/Users/zhihu/output/github/ai-cli-log/R… │
+ │                                                                                                                       │
+ │    ### ReadManyFiles Result (Target Dir: `/Users/zhihu/output/github/ai-cli-log`)                                     │
+ │                                                                                                                       │
+ │    Successfully read and concatenated content from **2 file(s)**.                                                     │
+ │                                                                                                                       │
+ │    **Processed Files:**                                                                                               │
+ │    - `README.md`                                                                                                      │
+ │    - `src/index.ts`                                                                                                   │
+ ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+ ╭────────────────────────╮
+ │ ✔  ReadFile README.md  │
+ ╰────────────────────────╯
+✦ 好的，我已经阅读了 README.md 的内容。现在我将更新它，在英文和中文部分都加入 sgpt 作为受支持的 AI 工具示例。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit README.md: # ai-cli-log... => # ai-cli-log...                                                      │
+ │                                                                                                            │
+ │    41     ```                                                                                              │
+ │    42                                                                                                      │
+ │    43     This command will:                                                                               │
+ │    44   - 1.  Scan for available AI tools on your system (like `gemini` or `ollama`).                      │
+ │    44   + 1.  Scan for available AI tools on your system (like `gemini`, `sgpt`, or `ollama`).             │
+ │    45     2.  Guide you through creating summarizer profiles for them.                                     │
+ │    46     3.  Set a default summarizer.                                                                    │
+ │    47                                                                                                      │
+ │    52     *   **Interactive Session Capture:** Faithfully records complex interactive CLI sessions.        │
+ │    53     *   **AI-Powered Summaries:** Automatically generates descriptive filenames from session         │
+ │           content, making logs easy to find and identify.                                                  │
+ │    54     *   **Accurate Rendering:** Uses `@xterm/headless` to interpret ANSI escape codes, ensuring the  │
+ │           log accurately reflects the final terminal state (spinners, progress bars, etc.).                │
+ │    55   - *   **Configurable:** Supports different AI backends (`gemini`, `ollama`, etc.) for generating   │
+ │           summaries.                                                                                       │
+ │    55   + *   **Configurable:** Supports different AI backends (`gemini`, `sgpt`, `ollama`, etc.) for      │
+ │           generating summaries.                                                                            │
+ │    56     *   **Performance-Aware:** When summarizing long sessions, it intelligently samples the          │
+ │           beginning and end of the output to ensure fast and cost-effective summary generation.            │
+ │    57     *   **Markdown Output:** Saves sessions as clean Markdown files.                                 │
+ │    58                                                                                                      │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    114    ```                                                                                              │
+ │    115                                                                                                     │
+ │    116    该命令将：                                                                                       │
+ │    117  - 1.  扫描您系统上可用的 AI 工具（如 `gemini` 或 `ollama`）。                                      │
+ │    117  + 1.  扫描您系统上可用的 AI 工具（如 `gemini`、`sgpt` 或 `ollama`）。                              │
+ │    118    2.  引导您为这些工具创建摘要器配置。                                                             │
+ │    119    3.  设置一个默认的摘要器。                                                                       │
+ │    120                                                                                                     │
+ │    125    *   **交互式会话捕获:** 忠实地记录复杂的交互式 CLI 会话。                                        │
+ │    126    *   **AI 驱动的摘要:** 从会话内容中自动生成描述性文件名，使日志易于查找和识别。                  │
+ │    127    *   **精确渲染:** 使用 `@xterm/headless` 解释 ANSI                                               │
+ │           转义码，确保日志准确反映最终的终端状态（如加载动画、进度条等）。                                 │
+ │    128  - *   **可配置:** 支持不同的 AI 后端（`gemini`, `ollama` 等）用于生成摘要。                        │
+ │    128  + *   **可配置:** 支持不同的 AI 后端（`gemini`、`sgpt`、`ollama` 等）用于生成摘要。                │
+ │    129    *   **性能感知:**                                                                                │
+ │           在总结长会话时，它会智能地抽样输出的开头和结尾，以确保快速且经济高效地生成摘要。                 │
+ │    130    *   **Markdown 输出:** 将会话保存为清晰的 Markdown 文件。                                        │
+ │    131                                                                                                     │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ README.md 文件已更新，加入了 sgpt 的说明。
+
+╭───────────╮
+│  > /quit  │
+╰───────────╯
+
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                                │
+│  Agent powering down. Goodbye!                                                                                                 │
+│                                                                                                                                │
+│  Interaction Summary                                                                                                           │
+│  Tool Calls:                 3 ( ✔ 3 ✖ 0 )                                                                                     │
+│  Success Rate:               100.0%                                                                                            │
+│  User Agreement:             100.0% (1 reviewed)                                                                               │
+│                                                                                                                                │
+│  Performance                                                                                                                   │
+│  Wall Time:                  4m                                                                                                │
+│  Agent Active:               3m 11s                                                                                            │
+│    » API Time:               1m 29s (46.7%)                                                                                    │
+│    » Tool Time:              1m 42s (53.3%)                                                                                    │
+│                                                                                                                                │
+│                                                                                                                                │
+│  Model Usage                  Reqs   Input Tokens  Output Tokens                                                               │
+│  ───────────────────────────────────────────────────────────────                                                               │
+│  gemini-2.5-pro                  5         42,572          3,345                                                               │
+│                                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯

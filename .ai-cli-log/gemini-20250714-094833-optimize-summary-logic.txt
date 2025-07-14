@@ -1,0 +1,342 @@
+███            █████████  ██████████ ██████   ██████ █████ ██████   █████ █████
+░░░███         ███░░░░░███░░███░░░░░█░░██████ ██████ ░░███ ░░██████ ░░███ ░░███
+  ░░░███      ███     ░░░  ░███  █ ░  ░███░█████░███  ░███  ░███░███ ░███  ░███
+    ░░░███   ░███          ░██████    ░███░░███ ░███  ░███  ░███░░███░███  ░███
+     ███░    ░███    █████ ░███░░█    ░███ ░░░  ░███  ░███  ░███ ░░██████  ░███
+   ███░      ░░███  ░░███  ░███ ░   █ ░███      ░███  ░███  ░███  ░░█████  ░███
+ ███░         ░░█████████  ██████████ █████     █████ █████ █████  ░░█████ █████
+░░░            ░░░░░░░░░  ░░░░░░░░░░ ░░░░░     ░░░░░ ░░░░░ ░░░░░    ░░░░░ ░░░░░
+
+
+Tips for getting started:
+1. Ask questions, edit files, or run commands.
+2. Be specific for the best results.
+3. /help for more information.
+
+
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > 请你修改 1.补充日志在写入文件之前，需要打印改文件名是由谁（哪个                                                   │
+│    model）总结的，总结结果的前N个词。另生成的文件名过长，我也需要你考虑按空格或者 -                                  │
+│    分割，取前10个词然后再拼接恢复。同时优化一下 prompt ，现在模型有点傻。                                            │
+│    heres-a-concise-summary-of-the-terminal-session-fix-sgpt-option-error-this-captures-1-the-action-fix-2-the-tool-i │
+│    nvolved-sgpt-3-the-issue-option-error-4-follows-the-requested-lowercase-hyphenated-format                         │
+│    生成的太宽泛了，不够总结，请你一定要强调一下是总结内容的行为的概括，不是一个个精细的描述。                        │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+✦ 好的，我将按您的要求修改 ai-cli-log 工具。
+
+  计划如下：
+
+
+   1. 优化总结提示 (Prompt): 我会修改发送给总结模型的提示，要求它生成更概括、更侧重于“行为”的摘要，而不是详细描述。
+   2. 修改文件名逻辑:
+       * 在生成文件名时，我会将摘要按空格或连字符分割，只取前10个词。
+       * 在写入文件前，我会在控制台打印出是哪个模型生成的摘要，以及摘要的前几个词。
+
+
+  我将首先阅读 src/index.ts 文件来定位并修改相关代码。
+ ╭───────────────────────────╮
+ │ ✔  ReadFile src/index.ts  │
+ ╰───────────────────────────╯
+✦ 好的，我将执行您的请求。
+
+  首先，我会用更优化的版本替换 src/index.ts 的全部内容。新版本将包含以下更改：
+
+
+   1. 优化了 Prompt： 更新了默认的 Prompt，以生成更精确、面向操作的文件名摘要。
+   2. 改进了文件名处理： 文件名将基于摘要的前10个词生成，避免过长。
+   3. 增加了摘要信息打印： 在写入日志文件前，会先在控制台显示生成摘要的模型和摘要内容预览。
+
+
+  我将用以下代码替换文件的全部内容。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts: #!/usr/bin/env node... => #!/usr/bin/env node...                                     │
+ │                                                                                                            │
+ │    90         const ask = (question: string) => new Promise<string>(resolve => rl.question(question,       │
+ │           resolve));                                                                                       │
+ │    91                                                                                                      │
+ │    92         const newSummarizers: Summarizer[] = [];                                                     │
+ │    93   +     const newPrompt = 'Analyze the following terminal session and provide a concise summary of   │
+ │           the user\'s actions. The summary should be a 3-5 word, lowercase, filename-friendly phrase that  │
+ │           describes the primary goal or activity, for example: "refactor-database-schema",                 │
+ │           "fix-login-bug", "install-new-dependencies". Do not describe the output, focus on the action.    │
+ │           The session content is:';                                                                        │
+ │    94                                                                                                      │
+ │    95         if (availableTools.includes('gemini')) {                                                     │
+ │    96             const add = await ask('\n> Create a summarizer configuration for Gemini? (Y/n): ');      │
+ │    98                 newSummarizers.push({                                                                │
+ │    99                     name: 'gemini-pro',                                                              │
+ │    100                    tool: 'gemini',                                                                  │
+ │    100  -                 prompt: 'Summarize the following terminal session into a 3-5 english word,       │
+ │           lowercase, filename-friendly phrase, example: "a-quick-gemini-test" "typescript-check-pass",     │
+ │           the session       content is:',                                                                  │
+ │    101  +                 prompt: newPrompt,                                                               │
+ │    102                    maxLines: 100,                                                                   │
+ │    103                });                                                                                  │
+ │    104            }                                                                                        │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    114                        name: `ollama-${model}`,                                                     │
+ │    115                        tool: 'ollama',                                                              │
+ │    116                        model: model,                                                                │
+ │    116  -                     prompt: 'Summarize the following terminal session into a 3-5 english word,   │
+ │           lowercase,       filename-friendly phrase (e.g., "refactor-database-schema", "fix-login-bug").   │
+ │           The session content       is:',                                                                  │
+ │    117  +                     prompt: newPrompt,                                                           │
+ │    118                        maxLines: 50,                                                                │
+ │    119                    });                                                                              │
+ │    120                }                                                                                    │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    128                    name: 'sgpt',                                                                    │
+ │    129                    tool: 'custom',                                                                  │
+ │    130                    command: ['sgpt', '--chat', 'session-summary', '"{{prompt}}"'],                  │
+ │    130  -                 prompt: 'Summarize the following terminal session into a 3-5 english word,       │
+ │           lowercase, filename-friendly phrase (e.g., "refactor-database-schema", "fix-login-bug"). The     │
+ │           session content is:',                                                                            │
+ │    131  +                 prompt: newPrompt,                                                               │
+ │    132                    maxLines: 100,                                                                   │
+ │    133                });                                                                                  │
+ │    134            }                                                                                        │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    173        const name = summarizerName || config.summarizer.default;                                    │
+ │    174                                                                                                     │
+ │    175        if (!name) {                                                                                 │
+ │    175  -         console.warn(`                                                                           │
+ │    176  - Warning: No default summarizer set. Please run 'ai-cli-log --init'.`);                           │
+ │    176  +         console.warn(`\nWarning: No default summarizer set. Please run 'ai-cli-log --init'.`);   │
+ │    177            return null;                                                                             │
+ │    178        }                                                                                            │
+ │    179                                                                                                     │
+ │    180        const summarizer = config.summarizer.summarizers.find(s => s.name === name);                 │
+ │    181                                                                                                     │
+ │    182        if (!summarizer) {                                                                           │
+ │    183  -         console.warn(`                                                                           │
+ │    184  - Warning: No summarizer named "${name}" found. Please check your configuration.`);                │
+ │    183  +         console.warn(`\nWarning: No summarizer named "${name}" found. Please check your          │
+ │           configuration.`);                                                                                │
+ │    184            return null;                                                                             │
+ │    185        }                                                                                            │
+ │    186                                                                                                     │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    225        const [cmd, ...args] = command;                                                              │
+ │    226                                                                                                     │
+ │    227        return new Promise((resolve) => {                                                            │
+ │    229  -         const slugify = (text: string) => text.toLowerCase().replace(/\s+/g,                     │
+ │           '-').replace(/[^a-z0-9-]/g, '');                                                                 │
+ │    228            const proc = spawn(cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] });                      │
+ │    229            let summary = '', errorOutput = '';                                                      │
+ │    230            proc.stdout.on('data', data => {                                                         │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    240                    console.error(`\nSummarizer command exited with code ${code}. Stderr:            │
+ │           ${errorOutput}`);                                                                                │
+ │    241                    resolve(null);                                                                   │
+ │    242                } else {                                                                             │
+ │    245  -                 const finalSummary = slugify(summary.trim());                                    │
+ │    246  -                 resolve(finalSummary);                                                           │
+ │    243  +                 resolve(summary.trim());                                                         │
+ │    244                }                                                                                    │
+ │    245            });                                                                                      │
+ │    246            proc.on('error', err => {                                                                │
+ │    ══════════════════════════════════════════════════════════════════════════════════════════════════════  │
+ │    312                let logFileName = `${prefix}-${timestamp}.txt`;                                      │
+ │    313                                                                                                     │
+ │    314                if (summaryArg) {                                                                    │
+ │    318  -                 const summary = await getAiSummary(renderedOutput, typeof summaryArg ===         │
+ │           'string' ? summaryArg : undefined);                                                              │
+ │    319  -                 if (summary) {                                                                   │
+ │    320  -                     logFileName = `${prefix}-${timestamp}-${summary}.txt`;                       │
+ │    315  +                 const rawSummary = await getAiSummary(renderedOutput, typeof summaryArg ===      │
+ │           'string' ? summaryArg : undefined);                                                              │
+ │    316  +                 if (rawSummary) {                                                                │
+ │    317  +                     const config = readConfig();                                                 │
+ │    318  +                     const summarizerName = (typeof summaryArg === 'string' ? summaryArg :        │
+ │           config.summarizer.default) || 'default';                                                         │
+ │    319  +                                                                                                  │
+ │    320  +                     const summaryWords = rawSummary.split(/\s+/);                                │
+ │    321  +                     const summaryPreview = summaryWords.slice(0, 10).join(' ');                  │
+ │    322  +                     console.log(`\nSummary by ${summarizerName}:                                 │
+ │           "${summaryPreview}${summaryWords.length > 10 ? '...' : ''}"`);                                   │
+ │    323  +                                                                                                  │
+ │    324  +                     const slugify = (text: string) => text.toLowerCase().replace(/\s+/g,         │
+ │           '-').replace(/[^a-z0-9-]/g, '');                                                                 │
+ │    325  +                     const slug = slugify(rawSummary).split('-').slice(0, 10).join('-');          │
+ │    326  +                     logFileName = `${prefix}-${timestamp}-${slug}.txt`;                          │
+ │    327                    }                                                                                │
+ │    328                }                                                                                    │
+ │    329                                                                                                     │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 好的，代码修改已完成。
+
+  我已根据您的要求更新了 src/index.ts 文件，主要包含以下三点：
+
+
+   1. 优化了提示（Prompt）：新的提示会引导 AI 生成更侧重于“行为”概括的摘要。
+   2. 文件名长度限制：现在会自动截取摘要的前10个词来生成文件名，避免了文件名过长的问题。
+   3. 增加摘要信息：在保存日志前，会在终端打印出生成该摘要的模型名称和摘要内容的预览。
+
+
+  接下来，我将执行 npm run build 来编译 TypeScript 代码，以确保修改没有引入任何错误。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell npm run build (Compile the TypeScript code to JavaScript to apply the changes.)                   │
+ │                                                                                                            │
+ │                                                                                                            │
+ │    > ai-cli-log@1.0.4 build                                                                                │
+ │    > tsc                                                                                                   │
+ │                                                                                                            │
+ │                                                                                                            │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 编译成功。您的修改现在已经生效。
+
+
+  如果您还有其他需要，请随时告诉我。
+
+╭──────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > 还是有问题 "Here's the concise summary: build-check-clean This captures: 1 The build...   │
+│    请你能否强调一下只输出总结的词本身比如 build-check-clean                                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────╯
+
+✦ 您指出的问题很明确，模型在生成摘要时加入了多余的解释性文字，而我们只需要纯粹的、符合文件名格式的短语。
+
+
+  这是典型的提示工程问题。为了解决它，我将再次修改 src/index.ts 文件中的提示（Prompt），使其更加严格和明确。
+
+  我的计划如下：
+
+
+   1. 强化提示（Prompt）：我会更新提示，用非常明确的语言指示模型只能输出最终的、连字符分隔的短语，禁止任何形式的引言、解
+      释或额外文字。
+   2. 重新编译：修改后，我会再次运行构建命令以应用更改。
+
+
+  现在，我将开始修改 src/index.ts。
+ ╭───────────────────────────╮
+ │ ✔  ReadFile src/index.ts  │
+ ╰───────────────────────────╯
+✦ 好的，我明白了。AI 模型在提供摘要时仍然过于“健谈”，我们需要更严格地限制其输出。
+
+
+  我将通过更新 src/index.ts
+  文件中的提示（Prompt）来解决这个问题，使其指令更加明确和强制，确保模型只返回我们需要的文本。
+
+  这是我的计划：
+
+
+   1. 强化提示（Prompt）：我会用一个更严格的提示替换现有的提示，明确指示模型只能输出摘要短语，不包含任何额外的单词或解释
+      。
+   2. 应用更改：我将使用新提示更新 src/index.ts 文件。
+   3. 重新编译：为了使更改生效，我将重新编译 TypeScript 代码。
+
+
+  现在，我将执行替换操作。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts:     const newPrompt = 'Analyze... =>     const newPrompt = 'CRITICA...               │
+ │                                                                                                            │
+ │    90     const ask = (question: string) => new Promise<string>(resolve => rl.question(question,           │
+ │           resolve));                                                                                       │
+ │    91                                                                                                      │
+ │    92     const newSummarizers: Summarizer[] = [];                                                         │
+ │    93   - const newPrompt = 'Analyze the following terminal session and provide a concise summary of the   │
+ │           user\'s actions. The summary should be a 3-5 word, lowercase, filename-friendly phrase that      │
+ │           describes the primary goal or activity, for example: "refactor-database-schema",                 │
+ │           "fix-login-bug", "install-new-dependencies". Do not describe the output, focus on the action.    │
+ │           The session content is:';                                                                        │
+ │    93   + const newPrompt = 'CRITICAL: Your response MUST be ONLY a 3-5 word, lowercase,                   │
+ │           filename-friendly phrase summarizing the user\'s actions in the following terminal session. DO   │
+ │           NOT include any other words, explanations, or introductory phrases. Examples of valid            │
+ │           responses: "refactor-database-schema", "fix-login-bug", "install-new-dependencies". Your entire  │
+ │           output should be just the phrase. The session content is:'                                       │
+ │    94                                                                                                      │
+ │    95     if (availableTools.includes('gemini')) {                                                         │
+ │    96         const add = await ask('\n> Create a summarizer configuration for Gemini? (Y/n): ');          │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 提示（Prompt）已经更新。
+
+
+  现在，我将运行 npm run build 来编译修改后的 TypeScript 代码，确保更改生效。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell npm run build (Compile the TypeScript code to JavaScript to apply the changes.)                   │
+ │                                                                                                            │
+ │                                                                                                            │
+ │    > ai-cli-log@1.0.4 build                                                                                │
+ │    > tsc                                                                                                   │
+ │                                                                                                            │
+ │                                                                                                            │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 编译成功。
+
+  我已经使用更严格的提示更新了代码，该提示强制模型只输出摘要短语，不含任何额外文本。这应该能解决您之前遇到的问题。
+
+
+  您可以再次尝试使用该工具，看看效果如何。如果还有其他问题，请随时提出。
+
+╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > 我执行 --init --local 发现并没有修改本地的config 的配置的 json 里面的prompt 是否是因为现在用代码里面的了2呢  │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+✦ 您观察得非常准确，一针见血！
+
+
+  您本地 config.json 文件中的 prompt 没有被更新，正是因为 --init
+  命令被设计为非破坏性的。它只会添加新的、不存在的配置，而不会覆盖您现有的配置。
+
+  在代码中，这部分逻辑在这里：
+
+
+
+   1 // ... inside handleInitCommand
+   2 newSummarizers.forEach(s => {
+   3     if (!existingNames.has(s.name)) { // <--- 这里检查配置是否已存在
+   4         mergedSummarizers.push(s);
+   5     }
+   6 });
+
+
+
+  因为您的配置文件中已经存在名为 gemini-pro 的配置，所以程序会跳过它，不会用代码中新的 prompt去更新它。
+
+  如何解决？
+
+  您有两个选择：
+
+
+   1. 手动更新：最快的方法是手动编辑您的本地配置文件。
+       * 文件路径: /Users/zhihu/output/github/ai-cli-log/.ai-cli-log/config.json
+       * 将 prompt 的值替换为我们最新优化的版本：
+
+
+   1         "CRITICAL: Your response MUST be ONLY a 3-5 word, lowercase, filename-friendly phrase summarizing
+     the user's actions in the following terminal session. DO NOT include any other words, explanations, or 
+     introductory phrases. Examples of valid responses: \"refactor-database-schema\", \"fix-login-bug\", 
+     \"install-new-dependencies\". Your entire output should be just the phrase. The session content is:"
+
+
+
+   2. 修改代码：如果您希望，我可以修改 --init 命令，比如增加一个 --force 标志，让它能够强制覆盖现有的配置。
+
+
+  您希望选择哪种方式？如果您希望我修改代码，请告诉我。
+
+╭───────────╮
+│  > /quit  │
+╰───────────╯
+
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                                │
+│  Agent powering down. Goodbye!                                                                                                 │
+│                                                                                                                                │
+│  Interaction Summary                                                                                                           │
+│  Tool Calls:                 6 ( ✔ 6 ✖ 0 )                                                                                     │
+│  Success Rate:               100.0%                                                                                            │
+│  User Agreement:             100.0% (3 reviewed)                                                                               │
+│                                                                                                                                │
+│  Performance                                                                                                                   │
+│  Wall Time:                  15m 10s                                                                                           │
+│  Agent Active:               5m 2s                                                                                             │
+│    » API Time:               4m 7s (81.6%)                                                                                     │
+│    » Tool Time:              55.7s (18.4%)                                                                                     │
+│                                                                                                                                │
+│                                                                                                                                │
+│  Model Usage                  Reqs   Input Tokens  Output Tokens                                                               │
+│  ───────────────────────────────────────────────────────────────                                                               │
+│  gemini-2.5-pro                  9        190,456          9,309                                                               │
+│                                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
