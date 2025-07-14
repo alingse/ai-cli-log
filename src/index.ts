@@ -90,6 +90,7 @@ async function handleInitCommand(isLocal: boolean) {
     const ask = (question: string) => new Promise<string>(resolve => rl.question(question, resolve));
 
     const newSummarizers: Summarizer[] = [];
+    const newPrompt = 'CRITICAL: Your response MUST be ONLY a 3-5 word, lowercase, filename-friendly phrase summarizing the user\'s actions in the following terminal session. DO NOT include any other words, explanations, or introductory phrases. Examples of valid responses: "refactor-database-schema", "fix-login-bug", "install-new-dependencies". Your entire output should be just the phrase. The session content is:'
 
     if (availableTools.includes('gemini')) {
         const add = await ask('\n> Create a summarizer configuration for Gemini? (Y/n): ');
@@ -97,7 +98,7 @@ async function handleInitCommand(isLocal: boolean) {
             newSummarizers.push({
                 name: 'gemini-pro',
                 tool: 'gemini',
-                prompt: 'Summarize the following terminal session into a 3-5 english word, lowercase, filename-friendly phrase, example: "a-quick-gemini-test" "typescript-check-pass", the session       content is:',
+                prompt: newPrompt,
                 maxLines: 100,
             });
         }
@@ -113,7 +114,7 @@ async function handleInitCommand(isLocal: boolean) {
                     name: `ollama-${model}`,
                     tool: 'ollama',
                     model: model,
-                    prompt: 'Summarize the following terminal session into a 3-5 english word, lowercase,       filename-friendly phrase (e.g., "refactor-database-schema", "fix-login-bug"). The session content       is:',
+                    prompt: newPrompt,
                     maxLines: 50,
                 });
             }
@@ -127,7 +128,7 @@ async function handleInitCommand(isLocal: boolean) {
                 name: 'sgpt',
                 tool: 'custom',
                 command: ['sgpt', '--chat', 'session-summary', '"{{prompt}}"'],
-                prompt: 'Summarize the following terminal session into a 3-5 english word, lowercase, filename-friendly phrase (e.g., "refactor-database-schema", "fix-login-bug"). The session content is:',
+                prompt: newPrompt,
                 maxLines: 100,
             });
         }
@@ -172,16 +173,14 @@ async function getAiSummary(content: string, summarizerName?: string): Promise<s
     const name = summarizerName || config.summarizer.default;
 
     if (!name) {
-        console.warn(`
-Warning: No default summarizer set. Please run 'ai-cli-log --init'.`);
+        console.warn(`\nWarning: No default summarizer set. Please run 'ai-cli-log --init'.`);
         return null;
     }
 
     const summarizer = config.summarizer.summarizers.find(s => s.name === name);
 
     if (!summarizer) {
-        console.warn(`
-Warning: No summarizer named "${name}" found. Please check your configuration.`);
+        console.warn(`\nWarning: No summarizer named "${name}" found. Please check your configuration.`);
         return null;
     }
 
@@ -226,7 +225,6 @@ Warning: No summarizer named "${name}" found. Please check your configuration.`)
     const [cmd, ...args] = command;
 
     return new Promise((resolve) => {
-        const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         const proc = spawn(cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] });
         let summary = '', errorOutput = '';
         proc.stdout.on('data', data => {
@@ -242,8 +240,7 @@ Warning: No summarizer named "${name}" found. Please check your configuration.`)
                 console.error(`\nSummarizer command exited with code ${code}. Stderr: ${errorOutput}`);
                 resolve(null);
             } else {
-                const finalSummary = slugify(summary.trim());
-                resolve(finalSummary);
+                resolve(summary.trim());
             }
         });
         proc.on('error', err => {
@@ -315,9 +312,18 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
             let logFileName = `${prefix}-${timestamp}.txt`;
 
             if (summaryArg) {
-                const summary = await getAiSummary(renderedOutput, typeof summaryArg === 'string' ? summaryArg : undefined);
-                if (summary) {
-                    logFileName = `${prefix}-${timestamp}-${summary}.txt`;
+                const rawSummary = await getAiSummary(renderedOutput, typeof summaryArg === 'string' ? summaryArg : undefined);
+                if (rawSummary) {
+                    const config = readConfig();
+                    const summarizerName = (typeof summaryArg === 'string' ? summaryArg : config.summarizer.default) || 'default';
+                    
+                    const summaryWords = rawSummary.split(/\s+/);
+                    const summaryPreview = summaryWords.slice(0, 10).join(' ');
+                    console.log(`\nSummary by ${summarizerName}: "${summaryPreview}${summaryWords.length > 10 ? '...' : ''}"`);
+
+                    const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                    const slug = slugify(rawSummary).split('-').slice(0, 10).join('-');
+                    logFileName = `${prefix}-${timestamp}-${slug}.txt`;
                 }
             }
 
