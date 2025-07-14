@@ -1,6 +1,6 @@
 {
   "name": "ai-cli-log",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Seamlessly log your AI-powered coding conversations. This command-line interface (CLI) tool captures your terminal   interactions with AI models like Gemini and Claude, saving entire sessions as clean plain text documents for easy   review and documentation.",
   "main": "dist/index.js",
   "bin": {
@@ -23,12 +23,14 @@
   },
   "homepage": "https://github.com/alingse/ai-cli-log#readme",
   "devDependencies": {
+    "@types/commander": "^2.12.0",
     "@types/node": "^24.0.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "@xterm/headless": "^5.5.0",
+    "commander": "^14.0.0",
     "node-pty": "^1.0.0"
   }
 }

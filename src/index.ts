@@ -7,6 +7,7 @@ import * as os from 'os';
 import { spawn } from 'child_process';
 import { Terminal } from '@xterm/headless';
 import readline from 'readline';
+import { Command } from 'commander';
 
 // --- 1. CONFIGURATION & TYPE DEFINITIONS ---
 
@@ -110,7 +111,7 @@ async function handleInitCommand(isLocal: boolean) {
 
         const config = readConfig();
         const summarizersToUpdate: Summarizer[] = [];
-        const newPrompt = 'You are a log summarizer. Your response MUST be a valid JSON object with one key: "summary" (a 3-5 word, lowercase, filename-friendly phrase). Example: {"summary": "refactor-database-schema"}. The session content is:';
+        const newPrompt = 'You are a log summarizer. Your response MUST be a raw, valid JSON object and nothing else. Do not wrap it in markdown blocks like ```json. The JSON object must have a single key "summary" which is a 3-5 word, lowercase, filename-friendly phrase. Example: {"summary": "refactor-database-schema"}. The session content is:';
 
         if (availableTools.includes('gemini')) {
             const add = await ask('\n> Found Gemini. Add/update the \'gemini-pro\' summarizer? (Y/n): ');
@@ -357,7 +358,11 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
                     const summarizerName = (typeof summaryArg === 'string' ? summaryArg : config.summarizer.default) || 'default';
                     
                     try {
-                        const summaryData = JSON.parse(rawSummaryJson);
+                        // Pre-process the raw summary to extract JSON from markdown blocks if present
+                        const jsonMatch = rawSummaryJson.match(/\{.*\}/s);
+                        const cleanJson = jsonMatch ? jsonMatch[0] : rawSummaryJson;
+
+                        const summaryData = JSON.parse(cleanJson);
                         const slug = summaryData.summary;
 
                         if (typeof slug !== 'string') {
@@ -399,45 +404,45 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
 // --- 3. MAIN ENTRY POINT & ARGUMENT PARSER ---
 
 function main() {
-    const args = process.argv.slice(2);
+    const program = new Command();
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const pkg = require('../package.json');
 
-    if (args.includes('--version') || args.includes('-v')) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const pkg = require('../package.json');
-        console.log(pkg.version);
-        return;
+    program
+        .name('ai-cli-log')
+        .description('A CLI tool to seamlessly log terminal sessions with AI models.')
+        .version(pkg.version, '-v, --version', 'Output the current version')
+        .option('-s, --with-summary [summarizer]', 'Enable AI summary for the session. Optionally specify a summarizer.');
+
+    program
+        .command('init')
+        .description('Initialize or update the configuration file.')
+        .option('--local', 'Create the configuration file in the current directory\'s .ai-cli-log folder.', false)
+        .action((options) => {
+            handleInitCommand(options.local);
+        });
+
+    program
+        .command('run')
+        .usage('<command> [args...]')
+        .description("Run a command and log the session. Any options for ai-cli-log itself (like -s) must come before the 'run' command.")
+        .argument('<command>', 'The command to execute and log.')
+        .argument('[args...]', 'Arguments for the command.')
+        .allowUnknownOption()
+        .action((command, args) => {
+            const options = program.opts();
+            let summaryArg: string | boolean = false;
+            if (options.withSummary) {
+                summaryArg = typeof options.withSummary === 'string' ? options.withSummary : true;
+            }
+            runLoggingSession(command, args, summaryArg);
+        });
+
+    program.parse(process.argv);
+
+    if (!process.argv.slice(2).length) {
+        program.help();
     }
-
-    if (args.includes('--init')) {
-        const isLocal = args.includes('--local');
-        handleInitCommand(isLocal);
-        return;
-    }
-
-    const summaryArgRaw = args.find(arg => arg.startsWith('--with-summary') || arg.startsWith('-s'));
-    
-    const otherArgs = args.filter(arg => 
-        !arg.startsWith('--with-summary') && 
-        !arg.startsWith('-s') &&
-        arg !== '--init' &&
-        arg !== '--local'
-    );
-    
-    const command = otherArgs[0];
-    const commandArgs = otherArgs.slice(1);
-
-    if (!command) {
-        console.error('Usage: ai-cli-log [-s[=<summarizer>]] <command> [args...]');
-        console.error('       ai-cli-log --init [--local]');
-        process.exit(1);
-    }
-
-    let summaryArg: string | boolean = false;
-    if (summaryArgRaw) {
-        summaryArg = summaryArgRaw.includes('=') ? summaryArgRaw.split('=')[1] : true;
-    }
-
-    runLoggingSession(command, commandArgs, summaryArg);
 }
 
 main();

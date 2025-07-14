@@ -4,14 +4,14 @@
       {
         "name": "gemini-pro",
         "tool": "gemini",
-        "prompt": "You are a log summarizer. Your response MUST be a valid JSON object with one key: \"summary\" (a 3-5 word, lowercase, filename-friendly phrase). Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
+        "prompt": "You are a log summarizer. Your response MUST be a raw, valid JSON object and nothing else. Do not wrap it in markdown blocks like ```json. The JSON object must have a single key \"summary\" which is a 3-5 word, lowercase, filename-friendly phrase. Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
         "maxLines": 100
       },
       {
         "name": "ollama",
         "tool": "ollama",
         "model": "llama3",
-        "prompt": "You are a log summarizer. Your response MUST be a valid JSON object with one key: \"summary\" (a 3-5 word, lowercase, filename-friendly phrase). Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
+        "prompt": "You are a log summarizer. Your response MUST be a raw, valid JSON object and nothing else. Do not wrap it in markdown blocks like ```json. The JSON object must have a single key \"summary\" which is a 3-5 word, lowercase, filename-friendly phrase. Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
         "maxLines": 50
       },
       {
@@ -23,7 +23,7 @@
           "session-summary",
           "\"{{prompt}}\""
         ],
-        "prompt": "You are a log summarizer. Your response MUST be a valid JSON object with one key: \"summary\" (a 3-5 word, lowercase, filename-friendly phrase). Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
+        "prompt": "You are a log summarizer. Your response MUST be a raw, valid JSON object and nothing else. Do not wrap it in markdown blocks like ```json. The JSON object must have a single key \"summary\" which is a 3-5 word, lowercase, filename-friendly phrase. Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
         "maxLines": 100
       }
     ],
