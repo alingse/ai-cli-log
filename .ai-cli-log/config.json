@@ -1,0 +1,20 @@
+{
+  "summarizer": {
+    "summarizers": [
+      {
+        "name": "gemini-pro",
+        "tool": "gemini",
+        "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase,  filename-friendly phrase, example: \"a-quick-gemini-test\" \"typescript-check-pass\", the session       content is:",
+        "maxLines": 100
+      },
+      {
+        "name": "ollama-llama3",
+        "tool": "ollama",
+        "model": "llama3",
+        "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase,       filename-friendly phrase (e.g., \"refactor-database-schema\", \"fix-login-bug\"). The session content       is:",
+        "maxLines": 50
+      }
+    ],
+    "default": "gemini-pro"
+  }
+}

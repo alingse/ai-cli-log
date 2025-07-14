@@ -20,6 +20,7 @@ interface Summarizer {
     model?: string;
     prompt: string;
     maxLines?: number;
+    command?: string[]; // For custom tools, e.g., ["sgpt", "--prompt", "{{prompt}}"]
 }
 
 interface AppConfig {
@@ -65,8 +66,8 @@ function writeConfig(config: AppConfig, isLocal: boolean) {
 
 async function handleInitCommand(isLocal: boolean) {
     console.log('Scanning for available AI tools...');
-    const availableTools: ('gemini' | 'ollama')[] = [];
-    const checkTool = (tool: 'gemini' | 'ollama') => new Promise<void>(resolve => {
+    const availableTools: ('gemini' | 'ollama' | 'sgpt')[] = [];
+    const checkTool = (tool: 'gemini' | 'ollama' | 'sgpt') => new Promise<void>(resolve => {
         const proc = spawn('which', [tool], { stdio: 'ignore' });
         proc.on('close', code => {
             if (code === 0) {
@@ -78,10 +79,10 @@ async function handleInitCommand(isLocal: boolean) {
         proc.on('error', () => resolve());
     });
 
-    await Promise.all([checkTool('gemini'), checkTool('ollama')]);
+    await Promise.all([checkTool('gemini'), checkTool('ollama'), checkTool('sgpt')]);
 
     if (availableTools.length === 0) {
-        console.log('No supported AI tools (gemini, ollama) found in your PATH.');
+        console.log('No supported AI tools (gemini, ollama, sgpt) found in your PATH.');
         return;
     }
 
@@ -96,8 +97,8 @@ async function handleInitCommand(isLocal: boolean) {
             newSummarizers.push({
                 name: 'gemini-pro',
                 tool: 'gemini',
-                prompt: 'Summarize the following terminal session into a 3-5 word, lowercase, filename-friendly phrase:',
-                maxLines: 150,
+                prompt: 'Summarize the following terminal session into a 3-5 english word, lowercase, filename-friendly phrase, example: "a-quick-gemini-test" "typescript-check-pass", the session       content is:',
+                maxLines: 100,
             });
         }
     }
@@ -112,12 +113,26 @@ async function handleInitCommand(isLocal: boolean) {
                     name: `ollama-${model}`,
                     tool: 'ollama',
                     model: model,
-                    prompt: 'Provide a very short summary (3-5 words, lowercase, filename-friendly) for this session:',
-                    maxLines: 200,
+                    prompt: 'Summarize the following terminal session into a 3-5 english word, lowercase,       filename-friendly phrase (e.g., "refactor-database-schema", "fix-login-bug"). The session content       is:',
+                    maxLines: 50,
                 });
             }
         }
     }
+    
+    if (availableTools.includes('sgpt')) {
+        const add = await ask('\n> Create a summarizer configuration for ShellGPT (sgpt)? (Y/n): ');
+        if (add.toLowerCase() !== 'n') {
+            newSummarizers.push({
+                name: 'sgpt-default',
+                tool: 'custom',
+                command: ['sgpt', '--no-animation', '--chat', 'session-summary', '"{{prompt}}"'],
+                prompt: 'Summarize the following terminal session into a 3-5 english word, lowercase, filename-friendly phrase (e.g., "refactor-database-schema", "fix-login-bug"). The session content is:',
+                maxLines: 100,
+            });
+        }
+    }
+
 
     if (newSummarizers.length === 0) {
         console.log('No new configurations were added.');
@@ -171,7 +186,7 @@ Warning: No summarizer named "${name}" found. Please check your configuration.`)
     }
 
 
-    const { tool, model, prompt, maxLines = 0 } = summarizer;
+    const { tool, model, prompt, maxLines = 0, command: customCommand } = summarizer;
 
     let sampledContent = content;
     const lines = content.split('\n');
@@ -192,6 +207,14 @@ Warning: No summarizer named "${name}" found. Please check your configuration.`)
             break;
         case 'gemini':
             command = ['gemini', '-p', prompt];
+            inputForStdin = sampledContent;
+            break;
+        case 'custom':
+            if (!customCommand) {
+                console.error(`Custom summarizer "${name}" is missing the "command" definition.`);
+                return null;
+            }
+            command = customCommand.map(arg => arg.replace('{{prompt}}', prompt));
             inputForStdin = sampledContent;
             break;
         default:

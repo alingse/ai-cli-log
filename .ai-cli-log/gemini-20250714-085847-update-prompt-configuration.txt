@@ -1,0 +1,189 @@
+███            █████████  ██████████ ██████   ██████ █████ ██████   █████ █████
+░░░███         ███░░░░░███░░███░░░░░█░░██████ ██████ ░░███ ░░██████ ░░███ ░░███
+  ░░░███      ███     ░░░  ░███  █ ░  ░███░█████░███  ░███  ░███░███ ░███  ░███
+    ░░░███   ░███          ░██████    ░███░░███ ░███  ░███  ░███░░███░███  ░███
+     ███░    ░███    █████ ░███░░█    ░███ ░░░  ░███  ░███  ░███ ░░██████  ░███
+   ███░      ░░███  ░░███  ░███ ░   █ ░███      ░███  ░███  ░███  ░░█████  ░███
+ ███░         ░░█████████  ██████████ █████     █████ █████ █████  ░░█████ █████
+░░░            ░░░░░░░░░  ░░░░░░░░░░ ░░░░░     ░░░░░ ░░░░░ ░░░░░    ░░░░░ ░░░░░
+
+
+Tips for getting started:
+1. Ask questions, edit files, or run commands.
+2. Be specific for the best results.
+3. /help for more information.
+
+
+╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > 请你阅读~/.config/ai-cli-log/config.json 看一下我的 prompt 的质量如何，如果有问题请你补充替换一份完整的 json 吧  │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+✦ 好的，我来检查一下您的配置文件。
+
+
+  由于我需要文件的绝对路径才能读取它，我将首先确定您的主目录。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell echo $HOME (Get the absolute path of the home directory to read the configuration file.)          │
+ │                                                                                                            │
+ │    /Users/zhihu                                                                                            │
+ │                                                                                                            │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 好的，现在我可以读取您的配置文件了。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  ReadFile ...../../.config/ai-cli-log/config.json                                                        │
+ │                                                                                                            │
+ │    File path must be within the root directory (/Users/zhihu/output/github/ai-cli-log):                    │
+ │    /Users/zhihu/.config/ai-cli-log/config.json                                                             │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 抱歉，我无法直接访问您主目录下的配置文件。我的访问权限被限制在当前项目目录 /Users/zhihu/output/github/ai-cli-log 内。
+
+
+  为了让我能评估您的 prompt 质量，请您将 ~/.config/ai-cli-log/config.json 文件的内容粘贴在这里。
+
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > {                                                                                                                 │
+│      "summarizer": {                                                                                                 │
+│        "summarizers": [                                                                                              │
+│          {                                                                                                           │
+│            "name": "gemini-pro",                                                                                     │
+│            "tool": "gemini",                                                                                         │
+│            "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase, filename-friendly │
+│     phrase, example: \"a-quick-gemini-test\" \"typescript-check-pass\", the session content is:",                    │
+│            "maxLines": 100                                                                                           │
+│          },                                                                                                          │
+│          {                                                                                                           │
+│            "name": "ollama-llama3",                                                                                  │
+│            "tool": "ollama",                                                                                         │
+│            "model": "llama3",                                                                                        │
+│            "prompt": "Provide a very short summary (3-5 words, lowercase, filename-friendly) for this session:",     │
+│            "maxLines": 50                                                                                            │
+│          }                                                                                                           │
+│        ],                                                                                                            │
+│        "default": "gemini-pro"                                                                                       │
+│      }                                                                                                               │
+│    }                                                                                                                 │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+✦ 好的，感谢您分享配置内容。
+
+  这是一个质量很不错的配置文件！特别是 gemini-pro 的 prompt，非常出色。
+
+  优点分析:
+
+
+   1. 明确具体: gemini-pro 的提示语非常清晰地说明了要求：“3-5个英文单词”、“小写”、“文件名友好”。
+   2. 提供范例: 关键在于您提供了 example: "a-quick-gemini-test" "typescript-check-pass"。这为 AI
+      模型提供了清晰的格式和风格指导，极大地提高了输出结果的稳定性和准确性。
+
+  可改进之处:
+
+
+   * ollama-llama3 的提示语相对简单。它虽然提到了要求，但缺少一个具体的范例。这可能会导致模型在“文件名友好”这个概念上产
+     生一些偏差（例如，是使用下划线 _ 还是连字符 -）。
+
+  优化建议:
+
+
+  为了让 ollama-llama3 的表现也同样出色和稳定，我建议将它的 prompt 调整为与 gemini-pro
+  类似的风格，也给它一个清晰的范例。
+
+  这是我为您准备的优化后的完整 config.json 内容：
+
+
+
+    1 {
+    2   "summarizer": {
+    3     "summarizers": [
+    4       {
+    5         "name": "gemini-pro",
+    6         "tool": "gemini",
+    7         "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase, 
+      filename-friendly phrase, example: \"a-quick-gemini-test\" \"typescript-check-pass\", the session 
+      content is:",
+    8         "maxLines": 100
+    9       },
+   10       {
+   11         "name": "ollama-llama3",
+   12         "tool": "ollama",
+   13         "model": "llama3",
+   14         "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase, 
+      filename-friendly phrase (e.g., \"refactor-database-schema\", \"fix-login-bug\"). The session content 
+      is:",
+   15         "maxLines": 50
+   16       }
+   17     ],
+   18     "default": "gemini-pro"
+   19   }
+   20 }
+
+
+  主要变更:
+
+
+   * 我将 ollama-llama3 的 prompt 修改为：
+      "Summarize the following terminal session into a 3-5 english word, lowercase, filename-friendly phrase (e.g., 
+  "refactor-database-schema", "fix-login-bug"). The session content is:"
+   * 这使得两个 summarizer 的指令风格保持一致，都包含了能有效指导模型的范例。
+
+
+  您可以直接复制上面的 JSON 内容来替换您现有的配置文件。
+
+╭────────────────────────────────────╮
+│  > 请你输出一个不带行号的 json 吧  │
+╰────────────────────────────────────╯
+
+✦ 好的，这是不带行号的 JSON 内容：
+
+
+
+    1 {
+    2   "summarizer": {
+    3     "summarizers": [
+    4       {
+    5         "name": "gemini-pro",
+    6         "tool": "gemini",
+    7         "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase, 
+      filename-friendly phrase, example: \"a-quick-gemini-test\" \"typescript-check-pass\", the session 
+      content is:",
+    8         "maxLines": 100
+    9       },
+   10       {
+   11         "name": "ollama-llama3",
+   12         "tool": "ollama",
+   13         "model": "llama3",
+   14         "prompt": "Summarize the following terminal session into a 3-5 english word, lowercase, 
+      filename-friendly phrase (e.g., \"refactor-database-schema\", \"fix-login-bug\"). The session content 
+      is:",
+   15         "maxLines": 50
+   16       }
+   17     ],
+   18     "default": "gemini-pro"
+   19   }
+   20 }
+
+
+╭───────────╮
+│  > /quit  │
+╰───────────╯
+
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                                │
+│  Agent powering down. Goodbye!                                                                                                 │
+│                                                                                                                                │
+│  Interaction Summary                                                                                                           │
+│  Tool Calls:                 2 ( ✔ 2 ✖ 0 )                                                                                     │
+│  Success Rate:               100.0%                                                                                            │
+│  User Agreement:             100.0% (1 reviewed)                                                                               │
+│                                                                                                                                │
+│  Performance                                                                                                                   │
+│  Wall Time:                  10m 6s                                                                                            │
+│  Agent Active:               1m 2s                                                                                             │
+│    » API Time:               56.0s (89.2%)                                                                                     │
+│    » Tool Time:              6.8s (10.8%)                                                                                      │
+│                                                                                                                                │
+│                                                                                                                                │
+│  Model Usage                  Reqs   Input Tokens  Output Tokens                                                               │
+│  ───────────────────────────────────────────────────────────────                                                               │
+│  gemini-2.5-pro                  5         46,410            985                                                               │
+│                                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
