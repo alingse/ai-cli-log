@@ -41,7 +41,7 @@ ai-cli-log --init
 ```
 
 This command will:
-1.  Scan for available AI tools on your system (like `gemini` or `ollama`).
+1.  Scan for available AI tools on your system (like `gemini`, `sgpt`, or `ollama`).
 2.  Guide you through creating summarizer profiles for them.
 3.  Set a default summarizer.
 
@@ -52,7 +52,7 @@ Configuration is saved to `.ai-cli-log/config.json` in the current directory. Us
 *   **Interactive Session Capture:** Faithfully records complex interactive CLI sessions.
 *   **AI-Powered Summaries:** Automatically generates descriptive filenames from session content, making logs easy to find and identify.
 *   **Accurate Rendering:** Uses `@xterm/headless` to interpret ANSI escape codes, ensuring the log accurately reflects the final terminal state (spinners, progress bars, etc.).
-*   **Configurable:** Supports different AI backends (`gemini`, `ollama`, etc.) for generating summaries.
+*   **Configurable:** Supports different AI backends (`gemini`, `sgpt`, `ollama`, etc.) for generating summaries.
 *   **Performance-Aware:** When summarizing long sessions, it intelligently samples the beginning and end of the output to ensure fast and cost-effective summary generation.
 *   **Markdown Output:** Saves sessions as clean Markdown files.
 
@@ -114,7 +114,7 @@ ai-cli-log --init
 ```
 
 该命令将：
-1.  扫描您系统上可用的 AI 工具（如 `gemini` 或 `ollama`）。
+1.  扫描您系统上可用的 AI 工具（如 `gemini`、`sgpt` 或 `ollama`）。
 2.  引导您为这些工具创建摘要器配置。
 3.  设置一个默认的摘要器。
 
@@ -125,7 +125,7 @@ ai-cli-log --init
 *   **交互式会话捕获:** 忠实地记录复杂的交互式 CLI 会话。
 *   **AI 驱动的摘要:** 从会话内容中自动生成描述性文件名，使日志易于查找和识别。
 *   **精确渲染:** 使用 `@xterm/headless` 解释 ANSI 转义码，确保日志准确反映最终的终端状态（如加载动画、进度条等）。
-*   **可配置:** 支持不同的 AI 后端（`gemini`, `ollama` 等）用于生成摘要。
+*   **可配置:** 支持不同的 AI 后端（`gemini`、`sgpt`、`ollama` 等）用于生成摘要。
 *   **性能感知:** 在总结长会话时，它会智能地抽样输出的开头和结尾，以确保快速且经济高效地生成摘要。
 *   **Markdown 输出:** 将会话保存为清晰的 Markdown 文件。
 

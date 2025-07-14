@@ -124,9 +124,9 @@ async function handleInitCommand(isLocal: boolean) {
         const add = await ask('\n> Create a summarizer configuration for ShellGPT (sgpt)? (Y/n): ');
         if (add.toLowerCase() !== 'n') {
             newSummarizers.push({
-                name: 'sgpt-default',
+                name: 'sgpt',
                 tool: 'custom',
-                command: ['sgpt', '--no-animation', '--chat', 'session-summary', '"{{prompt}}"'],
+                command: ['sgpt', '--chat', 'session-summary', '"{{prompt}}"'],
                 prompt: 'Summarize the following terminal session into a 3-5 english word, lowercase, filename-friendly phrase (e.g., "refactor-database-schema", "fix-login-bug"). The session content is:',
                 maxLines: 100,
             });
