@@ -1,0 +1,153 @@
+███            █████████  ██████████ ██████   ██████ █████ ██████   █████ █████
+░░░███         ███░░░░░███░░███░░░░░█░░██████ ██████ ░░███ ░░██████ ░░███ ░░███
+  ░░░███      ███     ░░░  ░███  █ ░  ░███░█████░███  ░███  ░███░███ ░███  ░███
+    ░░░███   ░███          ░██████    ░███░░███ ░███  ░███  ░███░░███░███  ░███
+     ███░    ░███    █████ ░███░░█    ░███ ░░░  ░███  ░███  ░███ ░░██████  ░███
+   ███░      ░░███  ░░███  ░███ ░   █ ░███      ░███  ░███  ░███  ░░█████  ░███
+ ███░         ░░█████████  ██████████ █████     █████ █████ █████  ░░█████ █████
+░░░            ░░░░░░░░░  ░░░░░░░░░░ ░░░░░     ░░░░░ ░░░░░ ░░░░░    ░░░░░ ░░░░░
+
+
+Tips for getting started:
+1. Ask questions, edit files, or run commands.
+2. Be specific for the best results.
+3. /help for more information.
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Gemini CLI update available! 0.1.9 → 0.1.12                                  │
+│ Run npm install -g @google/gemini-cli to update                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+╭────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > src/index.ts 里面，打印生成的总结的时候，需要把耗时也打印出来单位秒，保留1位小数即可。  │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+
+✦ 好的，我将修改 src/index.ts 文件，在打印总结时一并输出生成耗时。
+
+
+  我将读取文件内容，进行修改，然后写回。
+ ╭───────────────────────────╮
+ │ ✔  ReadFile src/index.ts  │
+ ╰───────────────────────────╯
+✦ 好的，我将修改 src/index.ts 文件。我将添加计时逻辑，在生成和打印摘要时，同时以秒为单位显示耗时，并保留一位小数。
+ ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts:             if (summaryArg) {... =>             if (summaryArg) {...                                                        │
+ │                                                                                                                                                   │
+ │    324    let logFileName = `${prefix}-${timestamp}.txt`;                                                                                         │
+ │    325                                                                                                                                            │
+ │    326    if (summaryArg) {                                                                                                                       │
+ │    327  +     const startTime = Date.now();                                                                                                       │
+ │    328        const rawSummary = await getAiSummary(renderedOutput, typeof summaryArg === 'string' ? summaryArg : undefined);                     │
+ │    329  +     const endTime = Date.now();                                                                                                         │
+ │    330        if (rawSummary) {                                                                                                                   │
+ │    331  +         const duration = (endTime - startTime) / 1000;                                                                                  │
+ │    332            const config = readConfig();                                                                                                    │
+ │    333            const summarizerName = (typeof summaryArg === 'string' ? summaryArg : config.summarizer.default) || 'default';                  │
+ │    334                                                                                                                                            │
+ │    335            const summaryWords = rawSummary.split(/\s+/);                                                                                   │
+ │    336            const summaryPreview = summaryWords.slice(0, 10).join(' ');                                                                     │
+ │    334  -         console.log(`\nSummary by ${summarizerName}: "${summaryPreview}${summaryWords.length > 10 ? '...' : ''}"`);                     │
+ │    337  +         console.log(`\nSummary by ${summarizerName} (took ${duration.toFixed(1)}s): "${summaryPreview}${summaryWords.length > 10 ?      │
+ │           '...' : ''}"`);                                                                                                                         │
+ │    338                                                                                                                                            │
+ │    339            const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');                           │
+ │    340            const slug = slugify(rawSummary).split('-').slice(0, 10).join('-');                                                             │
+ ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 修改已完成。现在我将运行构建命令以应用更改。
+ ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell npm run build (Compile the TypeScript code to apply the changes.)                                                                        │
+ │                                                                                                                                                   │
+ │                                                                                                                                                   │
+ │    > ai-cli-log@1.0.4 build                                                                                                                       │
+ │    > tsc                                                                                                                                          │
+ │                                                                                                                                                   │
+ │                                                                                                                                                   │
+ ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 构建成功。现在，当您使用 --with-summary 标志时，它将在摘要旁边显示生成所花费的时间。还有其他需要我帮助的吗？
+
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > const summaryWords = rawSummary.split(/\s+/);  和  const summaryPreview = summaryWords.slice(0, 10).join(' ');  总感觉那里不对，你看看const slugify =   │
+│    (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');  const slug = slugify(rawSummary).split('-').slice(0,             │
+│    10).join('-'); 能否用 slug 作为摘要呢？或者看你怎么看，我预期 ai 返回的都是 "fix-login-bug" 这种中横线连接的                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+✦ 您提出了一个很好的观点。
+
+  当前代码确实存在不一致之处：它将 AI
+  返回的摘要（可能带空格）作为预览显示，但又创建一个连字符版本（slug）用于文件名。这会导致预览和最终文件名中的摘要格式不同。
+
+
+  您的建议是正确的：我们应该统一使用 slug 作为摘要的唯一形式，既用于控制台输出，也用于文件名。这样做更简洁，也符合您对 AI 返回 fix-login-bug
+  这种格式的预期。
+
+  我将修改代码，直接使用 slug 作为摘要预览。
+
+
+   1. 我将先读取 src/index.ts 的最新内容。
+   2. 然后，我将用新的逻辑替换掉旧的摘要处理部分。
+ ╭───────────────────────────╮
+ │ ✔  ReadFile src/index.ts  │
+ ╰───────────────────────────╯
+✦ 好的，我将修改 src/index.ts 文件，统一使用 slug 作为摘要。
+ ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts:             if (summaryArg) {... =>             if (summaryArg) {...                                                        │
+ │                                                                                                                                                   │
+ │    332            const config = readConfig();                                                                                                    │
+ │    333            const summarizerName = (typeof summaryArg === 'string' ? summaryArg : config.summarizer.default) || 'default';                  │
+ │    334                                                                                                                                            │
+ │    335  -         const summaryWords = rawSummary.split(/\s+/);                                                                                   │
+ │    336  -         const summaryPreview = summaryWords.slice(0, 10).join(' ');                                                                     │
+ │    337  -         console.log(`\nSummary by ${summarizerName} (took ${duration.toFixed(1)}s): "${summaryPreview}${summaryWords.length > 10 ?      │
+ │           '...' : ''}"`);                                                                                                                         │
+ │    338  -                                                                                                                                         │
+ │    335            const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');                           │
+ │    336            const slug = slugify(rawSummary).split('-').slice(0, 10).join('-');                                                             │
+ │    337  +                                                                                                                                         │
+ │    338  +         console.log(`\nSummary by ${summarizerName} (took ${duration.toFixed(1)}s): "${slug}"`);                                        │
+ │    339  +                                                                                                                                         │
+ │    340            logFileName = `${prefix}-${timestamp}-${slug}.txt`;                                                                             │
+ │    341        }                                                                                                                                   │
+ │    342    }                                                                                                                                       │
+ ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 代码已更新。现在，它将直接显示处理过的、以连字符连接的摘要，并将其用于文件名。
+
+
+  接下来，我将运行构建命令来编译更新后的代码。
+ ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell npm run build (Compile the TypeScript code to apply the changes.)                                                                        │
+ │                                                                                                                                                   │
+ │                                                                                                                                                   │
+ │    > ai-cli-log@1.0.4 build                                                                                                                       │
+ │    > tsc                                                                                                                                          │
+ │                                                                                                                                                   │
+ │                                                                                                                                                   │
+ ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 构建成功。摘要逻辑现在更加一致。还有其他可以帮助您的吗？
+
+╭───────────╮
+│  > /quit  │
+╰───────────╯
+
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                                                                           │
+│  Agent powering down. Goodbye!                                                                                                                                            │
+│                                                                                                                                                                           │
+│  Interaction Summary                                                                                                                                                      │
+│  Tool Calls:                 6 ( ✔ 6 ✖ 0 )                                                                                                                                │
+│  Success Rate:               100.0%                                                                                                                                       │
+│  User Agreement:             100.0% (2 reviewed)                                                                                                                          │
+│                                                                                                                                                                           │
+│  Performance                                                                                                                                                              │
+│  Wall Time:                  8m 9s                                                                                                                                        │
+│  Agent Active:               4m 3s                                                                                                                                        │
+│    » API Time:               1m 12s (29.8%)                                                                                                                               │
+│    » Tool Time:              2m 50s (70.2%)                                                                                                                               │
+│                                                                                                                                                                           │
+│                                                                                                                                                                           │
+│  Model Usage                  Reqs   Input Tokens  Output Tokens                                                                                                          │
+│  ───────────────────────────────────────────────────────────────                                                                                                          │
+│  gemini-2.5-pro                  8        107,980          1,505                                                                                                          │
+│                                                                                                                                                                           │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯

@@ -324,17 +324,19 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
             let logFileName = `${prefix}-${timestamp}.txt`;
 
             if (summaryArg) {
+                const startTime = Date.now();
                 const rawSummary = await getAiSummary(renderedOutput, typeof summaryArg === 'string' ? summaryArg : undefined);
+                const endTime = Date.now();
                 if (rawSummary) {
+                    const duration = (endTime - startTime) / 1000;
                     const config = readConfig();
                     const summarizerName = (typeof summaryArg === 'string' ? summaryArg : config.summarizer.default) || 'default';
                     
-                    const summaryWords = rawSummary.split(/\s+/);
-                    const summaryPreview = summaryWords.slice(0, 10).join(' ');
-                    console.log(`\nSummary by ${summarizerName}: "${summaryPreview}${summaryWords.length > 10 ? '...' : ''}"`);
-
                     const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
                     const slug = slugify(rawSummary).split('-').slice(0, 10).join('-');
+
+                    console.log(`\nSummary by ${summarizerName} (took ${duration.toFixed(1)}s): "${slug}"`);
+
                     logFileName = `${prefix}-${timestamp}-${slug}.txt`;
                 }
             }
