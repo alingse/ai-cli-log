@@ -24,13 +24,19 @@ ai-cli-log [global-options] run <command-to-log> [args...]
   ```
   *Logs are saved to the `.ai-cli-log/` directory.*
 
-- **AI-Powered Filenames:** Use an AI summary for the log's filename. The `-s` or `--with-summary` option must come **before** the `run` command.
+- **AI-Powered Filenames:** Use an AI summary for the log's filename. The options must come **before** the `run` command.
   ```bash
-  ai-cli-log -s run <command> [args...]
-  # or specify a summarizer
-  ai-cli-log --with-summary=gemini-pro run <command> [args...]
+  # Enable summary with the default summarizer
+  ai-cli-log -s run gemini
+  # or
+  ai-cli-log --with-summary run gemini
+
+  # Enable summary and specify a summarizer
+  ai-cli-log --by gemini-pro run gemini
+  # or
+  ai-cli-log --summarizer gemini-pro run gemini
   ```
-  This will use your default (or specified) summarizer to generate a descriptive filename like `gemini-20250713-153000-fix-database-connection-error.md`.
+  This will use your default (or specified) summarizer to generate a descriptive filename like `gemini-20250713-153000-fix-database-connection-error.txt`.
 
 ## Configuration
 
@@ -44,7 +50,7 @@ You can create these files manually or by using the interactive setup command.
 
 ### Interactive Setup (`init`)
 
-The `init` command helps you create a configuration file.
+The `init` command helps you create a configuration file. It will scan for available AI tools, guide you through creating summarizer profiles, and set a default.
 
 *   **To create a global configuration:**
     ```bash
@@ -83,23 +89,14 @@ Here is an example of a manual `config.json`:
       {
         "name": "sgpt",
         "tool": "custom",
-        "command": ["sgpt", "--chat", "session-summary", "\"{{prompt}}\""]
-      },
-
-*   **To create a global configuration file (at `~/.config/ai-cli-log/config.json`):**
-    ```bash
-    ai-cli-log --init
-    ```
-
-*   **To create a local, project-specific configuration file (at `.ai-cli-log/config.json`):**
-    ```bash
-    ai-cli-log --init --local
-    ```
-
-This command will:
-1.  Scan for available AI tools on your system (like `gemini`, `sgpt`, or `ollama`).
-2.  Guide you through creating summarizer profiles for them.
-3.  Set a default summarizer.
+        "prompt": "You are a log summarizer. Your response MUST be a valid JSON object with one key: \"summary\" (a 3-5 word, lowercase, filename-friendly phrase). Example: {\"summary\": \"refactor-database-schema\"}. The session content is:",
+        "command": ["sgpt", "--chat", "session-summary", "\"{{prompt}}\""],
+        "maxLines": 50
+      }
+    ]
+  }
+}
+```
 
 ## Features
 
@@ -108,7 +105,7 @@ This command will:
 *   **Accurate Rendering:** Uses `@xterm/headless` to interpret ANSI escape codes, ensuring the log accurately reflects the final terminal state (spinners, progress bars, etc.).
 *   **Configurable:** Supports different AI backends (`gemini`, `sgpt`, `ollama`, etc.) for generating summaries.
 *   **Performance-Aware:** When summarizing long sessions, it intelligently samples the beginning and end of the output to ensure fast and cost-effective summary generation.
-*   **Markdown Output:** Saves sessions as clean Markdown files.
+*   **Plain Text Output:** Saves sessions as clean plain text files.
 
 ## Development Notes
 
@@ -148,13 +145,19 @@ ai-cli-log [全局选项] run <要记录的命令> [参数...]
   ```
   *日志将保存到 `.ai-cli-log/` 目录中。*
 
-- **AI 驱动的文件名:** 使用 AI 摘要作为日志文件名。`-s` 或 `--with-summary` 选项必须在 `run` 命令**之前**。
+- **AI 驱动的文件名:** 使用 AI 摘要作为日志文件名。选项必须在 `run` 命令**之前**。
   ```bash
-  ai-cli-log -s run <命令> [参数...]
-  # 或指定一个摘要器
-  ai-cli-log --with-summary=gemini-pro run <命令> [参数...]
+  # 使用默认摘要器启用摘要
+  ai-cli-log -s run gemini
+  # 或
+  ai-cli-log --with-summary run gemini
+
+  # 启用摘要并指定一个摘要器
+  ai-cli-log --by gemini-pro run gemini
+  # 或
+  ai-cli-log --summarizer gemini-pro run gemini
   ```
-  这将使用您默认（或指定）的摘要器生成一个描述性的文件名，例如 `gemini-20250713-153000-fix-database-connection-error.md`。
+  这将使用您默认（或指定）的摘要器生成一个描述性的文件名，例如 `gemini-20250713-153000-fix-database-connection-error.txt`。
 
 ## 配置
 
@@ -168,13 +171,13 @@ ai-cli-log [全局选项] run <要记录的命令> [参数...]
 
 ### 交互式设置 (`init`)
 
-`init` 命令可以帮助您创建配置文件。
+`init` 命令可以帮助您创建配置文件。它会扫描可用的 AI 工具，引导您完成摘要器配置的创建，并设置一个默认值。
 
 *   **创建全局配置文件:**
     ```bash
     ai-cli-log init
     ```
-    This saves the configuration to `~/.config/ai-cli-log/config.json`.
+    这会将配置保存到 `~/.config/ai-cli-log/config.json`。
 
 *   **创建本地（项目特定）配置文件:**
     ```bash
@@ -194,22 +197,22 @@ ai-cli-log [全局选项] run <要记录的命令> [参数...]
       {
         "name": "gemini-pro",
         "tool": "gemini",
-        "prompt": "你是一个日志摘要器。你的响应必须是一个有效的 JSON 对象，其中包含一个键："summary"（一个 3-5 个单词的、小写的、文件名友好的短语）。示例：{"summary": "refactor-database-schema"}。会话内容是：",
+        "prompt": "你是一个日志摘要器。你的响应必须是一个有效的 JSON 对象，其中包含一个键：\"summary\"（一个 3-5 个单词的、小写的、文件名友好的短语）。示例：{\"summary\": \"refactor-database-schema\"}。会话内容是：",
         "maxLines": 100
       },
       {
         "name": "ollama",
         "tool": "ollama",
         "model": "llama3",
-        "prompt": "你是一个日志摘要器。你的响应必须是一个有效的 JSON 对象，其中包含一个键："summary"（一个 3-5 个单词的、小写的、文件名友好的短语）。示例：{"summary": "refactor-database-schema"}。会话内容是：",
+        "prompt": "你是一个日志摘要器。你的响应必须是一个有效的 JSON 对象，其中包含一个键：\"summary\"（一个 3-5 个单词的、小写的、文件名友好的短语）。示例：{\"summary\": \"refactor-database-schema\"}。会话内容是：",
         "maxLines": 50
       },
       {
         "name": "sgpt",
         "tool": "custom",
-        "command": ["sgpt", "--chat", "session-summary", ""{{prompt}}""],
-        "prompt": "你是一个日志摘要器。你的响应必须是一个有效的 JSON 对象，其中包含一个键："summary"（一个 3-5 个单词的、小写的、文件名友好的短语）。示例：{"summary": "refactor-database-schema"}。会话内容是：",
-        "maxLines": 100
+        "command": ["sgpt", "--chat", "session-summary", "\"{{prompt}}\""],
+        "prompt": "你是一个日志摘要器。你的响应必须是一个有效的 JSON 对象，其中包含一个键\"summary\"（一个 3-5 个单词的、小写的、文件名友好的短语）。示例：{\"summary\": \"refactor-database-schema\"}。会话内容是：",
+        "maxLines": 50
       },
       {
         "name": "my-custom-summarizer",
@@ -237,40 +240,7 @@ ai-cli-log [全局选项] run <要记录的命令> [参数...]
     *   **`prompt`**: 传递给摘要器命令的提示。会话内容将作为标准输入传递。
     *   **`maxLines`** (可选): 限制传递给摘要器的会话内容行数。如果会话内容超过此限制，将只采样开头和结尾的行。
     *   **`command`** (可选): 对于 `custom` 工具，指定要执行的命令数组。会话内容会通过管道传递给该命令的 `stdin`。`{{prompt}}` 占位符将被实际的提示字符串替换。例如: `["my-summarizer-script", "--prompt", "{{prompt}}"]`。
-    *   **重要**: 摘要器的输出**必须**是一个有效的 JSON 对象，其中包含一个名为 `summary` 的键（例如，`{"summary": "你的摘要短语"}`）。
-```
-
-**Field Descriptions:**
-
-*   `summarizer.default` (optional): The name of the default summarizer configuration to use.
-*   `summarizer.summarizers`: An array of different summarizer configurations.
-    *   **`name`**: A unique name you give to the summarizer configuration (e.g., `gemini-pro`, `ollama`, `claude-opus`, `my-custom-summarizer`).
-    *   **`tool`**: The type of tool the summarizer uses.
-        *   `gemini`: Uses the `gemini` CLI tool.
-        *   `ollama`: Uses the `ollama` CLI tool.
-        *   `claude`: Uses the `claude` CLI tool.
-        *   `custom`: Uses a custom command.
-    *   **`model`** (optional): For the `ollama` tool, specifies the model name to use (e.g., `llama3`).
-    *   **`prompt`**: The prompt passed to the summarizer command. The session content will be passed as standard input.
-    *   **`maxLines`** (optional): Limits the number of session content lines passed to the summarizer. If the session exceeds this limit, only the beginning and end lines will be sampled.
-    *   **`command`** (optional): For the `custom` tool, specifies the command array to execute. The session content is piped to this command's `stdin`. The `{{prompt}}` placeholder will be replaced with the actual prompt string. Example: `["my-summarizer-script", "--prompt", "{{prompt}}"]`.
-    *   **Important**: The output from the summarizer **MUST** be a valid JSON object containing a key named `summary` (e.g., `{"summary": "your-summary-phrase"}`).
-
-### 交互式设置 (`--init`)
-
-运行交互式设置来创建配置文件。
-
-*   **创建全局配置文件 (位于 `~/.config/ai-cli-log/config.json`):**
-    ```bash
-    ai-cli-log --init
-    ```
-
-*   **创建本地、项目特定的配置文件 (位于 `.ai-cli-log/config.json`):**
-    ```bash
-    ai-cli-log --init --local
-    ```
-
-该命令将引导您完成配置过程，包括扫描可用的 AI 工具、创建摘要器配置和设置默认摘要器。
+    *   **重要**: 摘要器的输出**必须**是一个有效的 JSON 对象，其中包含一个名为 `summary` 的键（例如，`{"summary": "fix-login-bug"}`）。
 
 ## 功能特性
 
@@ -289,8 +259,4 @@ ai-cli-log [全局选项] run <要记录的命令> [参数...]
 
 ## 待办事项 (TODO)
 
-*   **内容处理:**
-    *   当会话输出为空时，避免保存空的日志文件。
-    *   尾随空格和空行现在已从输出中删除，以解决内容不足导致大片空白区域的问题。
-*   **文件名约定:** 当前基于时间戳的文件名虽然功能上可行，但可能过于单调。评估其他更具描述性的文件名方案，同时仔细考虑如果使用 AI 摘要进行命名可能导致的信息泄露问题。
-
+*   **Markdown 支持:** 探寻并实现将日志保存为 Markdown 格式的可能性，可在文件的 frontmatter 中包含会话元数据（如：命令、时间戳、摘要等）。

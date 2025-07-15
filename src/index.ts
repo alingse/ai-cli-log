@@ -412,7 +412,8 @@ function main() {
         .name('ai-cli-log')
         .description('A CLI tool to seamlessly log terminal sessions with AI models.')
         .version(pkg.version, '-v, --version', 'Output the current version')
-        .option('-s, --with-summary [summarizer]', 'Enable AI summary for the session. Optionally specify a summarizer.');
+        .option('-s, --with-summary', 'Enable AI summary for the session using the default summarizer.')
+        .option('--by <name>, --summarizer <name>', 'Specify a summarizer to use. Implies --with-summary.');
 
     program
         .command('init')
@@ -432,8 +433,12 @@ function main() {
         .action((command, args) => {
             const options = program.opts();
             let summaryArg: string | boolean = false;
-            if (options.withSummary) {
-                summaryArg = typeof options.withSummary === 'string' ? options.withSummary : true;
+            if (options.by) {
+                summaryArg = options.by;
+            } else if (options.summarizer) {
+                summaryArg = options.summarizer;
+            } else if (options.withSummary) {
+                summaryArg = true;
             }
             runLoggingSession(command, args, summaryArg);
         });
