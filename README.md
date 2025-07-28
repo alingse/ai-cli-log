@@ -38,6 +38,23 @@ ai-cli-log [global-options] run <command-to-log> [args...]
   ```
   This will use your default (or specified) summarizer to generate a descriptive filename like `gemini-20250713-153000-fix-database-connection-error.txt`.
 
+## Alias for Quick Access
+
+For even faster access, you can create shell aliases. This allows you to start a logged session with a short command. Add these to your shell's configuration file (e.g., `~/.bashrc`, `~/.zshrc`).
+
+```bash
+# Start a logged Gemini session with an AI-generated summary
+alias ag='ai-cli-log -s run gemini'
+
+# Start a logged Claude session with an AI-generated summary
+alias ac='ai-cli-log -s run claude'
+
+# You can also omit the -s flag for basic logging
+alias ag-log='ai-cli-log run gemini'
+```
+
+Now, you can simply run `ag` to start a recorded Gemini session.
+
 ## Configuration
 
 `ai-cli-log` loads configuration from `config.json` files. It prioritizes a local (project-specific) configuration over the global one.
@@ -109,7 +126,7 @@ Here is an example of a manual `config.json`:
 
 ## Development Notes
 
-This project was generated with the assistance of Google Gemini. You can review the detailed development process and interactions in the `.ai-cli-log` directory, specifically starting with `0001.txt` and subsequent log files.
+This project was generated with the assistance of Google Gemini. You can review the detailed development process and interactions in the `.ai-cli-log` directory of the project's GitHub repository: [https://github.com/alingse/ai-cli-log/tree/main/.ai-cli-log](https://github.com/alingse/ai-cli-log/tree/main/.ai-cli-log). The development prompts are primarily in Chinese.
 
 Special thanks to Gemini for its invaluable help in the development of this tool!
 
@@ -158,6 +175,23 @@ ai-cli-log [全局选项] run <要记录的命令> [参数...]
   ai-cli-log --summarizer gemini-pro run gemini
   ```
   这将使用您默认（或指定）的摘要器生成一个描述性的文件名，例如 `gemini-20250713-153000-fix-database-connection-error.txt`。
+
+## 快捷别名 (Alias)
+
+为了更快捷地启动，您可以创建 shell 别名。这样，您可以用一个简短的命令开始一个带日志记录的会话。将以下内容添加到您的 shell 配置文件中（例如 `~/.bashrc`, `~/.zshrc`）。
+
+```bash
+# 启动一个带 AI 摘要的 Gemini 会话
+alias ag='ai-cli-log -s run gemini'
+
+# 启动一个带 AI 摘要的 Claude 会话
+alias ac='ai-cli-log -s run claude'
+
+# 您也可以省略 -s 标志以进行基本日志记录
+alias ag-log='ai-cli-log run gemini'
+```
+
+现在，您只需运行 `ag` 即可启动一个被记录的 Gemini 会话。
 
 ## 配置
 
@@ -253,7 +287,7 @@ ai-cli-log [全局选项] run <要记录的命令> [参数...]
 
 ## 开发说明
 
-本项目是在 Google Gemini 的协助下生成的。您可以在 `.ai-cli-log` 目录中查看详细的开发过程和交互记录，特别是从 `0001.txt` 开始的日志文件。
+本项目是在 Google Gemini 的协助下生成的。您可以在本项目的 GitHub 仓库中查看详细的开发过程和交互记录，所有开发记录（中文 Prompt）都保存在 `.ai-cli-log` 目录中：[https://github.com/alingse/ai-cli-log/tree/main/.ai-cli-log](https://github.com/alingse/ai-cli-log/tree/main/.ai-cli-log)。
 
 特别感谢 Gemini 在本项目开发过程中提供的宝贵帮助！
 
