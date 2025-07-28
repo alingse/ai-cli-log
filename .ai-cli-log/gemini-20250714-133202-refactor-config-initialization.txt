@@ -367,8 +367,8 @@ Tips for getting started:
  ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
  │ ✔  Edit ../ai--cli-log/src/index.ts:         try {... =>         writeConfig(config, is...                                                        │
  │                                                                                                                                                   │
- │    Error: File path must be within the root directory (/Users/zhihu/output/github/ai-cli-log):                                                    │
- │    /Users/zhihu/output/github/ai--cli-log/src/index.ts                                                                                            │
+ │    Error: File path must be within the root directory (/Users/*****/output/github/ai-cli-log):                                                    │
+ │    /Users/*****/output/github/ai--cli-log/src/index.ts                                                                                            │
  ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ✦ 我为那个错误感到抱歉。我在文件路径中输入了一个错字。
 
@@ -1181,7 +1181,7 @@ Tips for getting started:
 │      - Updated existing summarizer: "gemini-pro"                                                         │
 │      - Added new summarizer: "ollama"                                                                    │
 │      - Added new summarizer: "sgpt"                                                                      │
-│    ✔ Configuration successfully saved to /Users/zhihu/output/github/ai-cli-log/.ai-cli-log/config.json   │
+│    ✔ Configuration successfully saved to /Users/*****/output/github/ai-cli-log/.ai-cli-log/config.json   │
 │     这个逻辑不太对，我还需要你考虑发现了这些工具，还是需要用户确认是否添加的。请你补充                   │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 

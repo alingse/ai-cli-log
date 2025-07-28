@@ -1,0 +1,173 @@
+███            █████████  ██████████ ██████   ██████ █████ ██████   █████ █████
+░░░███         ███░░░░░███░░███░░░░░█░░██████ ██████ ░░███ ░░██████ ░░███ ░░███
+  ░░░███      ███     ░░░  ░███  █ ░  ░███░█████░███  ░███  ░███░███ ░███  ░███
+    ░░░███   ░███          ░██████    ░███░░███ ░███  ░███  ░███░░███░███  ░███
+     ███░    ░███    █████ ░███░░█    ░███ ░░░  ░███  ░███  ░███ ░░██████  ░███
+   ███░      ░░███  ░░███  ░███ ░   █ ░███      ░███  ░███  ░███  ░░█████  ░███
+ ███░         ░░█████████  ██████████ █████     █████ █████ █████  ░░█████ █████
+░░░            ░░░░░░░░░  ░░░░░░░░░░ ░░░░░     ░░░░░ ░░░░░ ░░░░░    ░░░░░ ░░░░░
+
+
+Tips for getting started:
+1. Ask questions, edit files, or run commands.
+2. Be specific for the best results.
+3. /help for more information.
+
+
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│  > 请你阅读 https://github.com/alingse/ai-cli-log/issues/12 感觉是因为模型返回的 summary                   │
+│    的单词太多了能否做一些精简呢？比如超过5个单词的时候只用 5个呢？ @src/index.ts 请你阅读代码并修复增强。  │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+ ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `src/index.ts` (within target directory:… │
+ │                                                                                                                       │
+ │    ### ReadManyFiles Result (Target Dir: `/Users/*****/output/github/ai-cli-log`)                                     │
+ │                                                                                                                       │
+ │    Successfully read and concatenated content from **1 file(s)**.                                                     │
+ │                                                                                                                       │
+ │    **Processed Files:**                                                                                               │
+ │    - `src/index.ts`                                                                                                   │
+ ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 好的，我明白了。根据您在 GitHub issue #12 中描述的问题，AI 生成的摘要有时候会过长，导致文件名不美观。
+
+
+  我将修改 src/index.ts 文件，对生成的摘要进行处理：
+   1. 无论是从 AI 返回的 JSON 中提取的摘要，还是在解析失败时的原始输出，我都会将其转换为 slug 格式（小写、连字符分隔）。
+   2. 然后，我会将 slug 限制在最多 5 个单词（或由连字符分隔的部分）。
+
+  这将确保即使 AI 返回了较长的描述，最终用于文件名的部分也是简洁的。
+
+
+  我现在将执行代码替换操作。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts:                     try {... =>                     try {...                         │
+ │                                                                                                            │
+ │    363            const cleanJson = jsonMatch ? jsonMatch[0] : rawSummaryJson;                             │
+ │    364                                                                                                     │
+ │    365            const summaryData = JSON.parse(cleanJson);                                               │
+ │    366  -         const slug = summaryData.summary;                                                        │
+ │    366  +         const slugFromAi = summaryData.summary;                                                  │
+ │    367                                                                                                     │
+ │    368  -         if (typeof slug !== 'string') {                                                          │
+ │    368  +         if (typeof slugFromAi !== 'string') {                                                    │
+ │    369                throw new Error('Invalid JSON structure from summarizer: "summary" key is missing    │
+ │           or not a string.');                                                                              │
+ │    370            }                                                                                        │
+ │    371                                                                                                     │
+ │    372  +         const slugify = (text: string) => text.toLowerCase().replace(/\s+/g,                     │
+ │           '-').replace(/[^a-z0-9-]/g, '');                                                                 │
+ │    373  +         const slug = slugify(slugFromAi).split('-').filter(Boolean).slice(0, 5).join('-');       │
+ │    374  +                                                                                                  │
+ │    375            console.log(`\nSummary by ${summarizerName} (took ${duration.toFixed(1)}s):              │
+ │           "${slug}"`);                                                                                     │
+ │    376            logFileName = `${prefix}-${timestamp}-${slug}.txt`;                                      │
+ │    377                                                                                                     │
+ │    379            console.error(`\nError parsing summary JSON from ${summarizerName}. Using raw output as  │
+ │           fallback.`);                                                                                     │
+ │    380            console.error(`Raw output: ${rawSummaryJson}`);                                          │
+ │    381            const slugify = (text: string) => text.toLowerCase().replace(/\s+/g,                     │
+ │           '-').replace(/[^a-z0-9-]/g, '');                                                                 │
+ │    379  -         const slug = slugify(rawSummaryJson).split('-').slice(0, 10).join('-');                  │
+ │    382  +         const slug = slugify(rawSummaryJson).split('-').filter(Boolean).slice(0, 5).join('-');   │
+ │    383            logFileName = `${prefix}-${timestamp}-${slug}.txt`;                                      │
+ │    384        }                                                                                            │
+ │    385    }                                                                                                │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 我已经更新了 src/index.ts 文件。现在，无论是解析 JSON 成功还是失败，生成的 slug 都将被限制在 5 个单词以内。
+
+
+  接下来，我将运行构建命令来编译 TypeScript 代码，以确保修改没有引入任何错误。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell npm run build (Compile TypeScript code to JavaScript.)                                            │
+ │                                                                                                            │
+ │                                                                                                            │
+ │    > ai-cli-log@1.0.9 build                                                                                │
+ │    > tsc                                                                                                   │
+ │                                                                                                            │
+ │                                                                                                            │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 很好，代码编译成功了。这表明我所做的修改在语法上是正确的。
+
+
+  现在，这个增强功能已经完成。当您下次使用带有摘要功能的 ai-cli-log 时，无论 AI
+  模型返回多长的摘要，最终生成的文件名都会被限制在 5 个单词以内，这应该能解决您在 GitHub issue 中提到的问题。
+
+
+  如果您还有其他问题或需要进一步的修改，请随时告诉我。
+
+╭─────────────────────────────────────╮
+│  > 调整为6个单词吧这样可能好一点？  │
+╰─────────────────────────────────────╯
+
+✦ 没问题，将限制从 5 个单词调整为 6 个单词是一个简单的修改。
+
+
+  我现在就修改 src/index.ts 文件，将 .slice(0, 5) 更改为 .slice(0, 6)。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Edit src/index.ts: ).split('-').filter(Boolean).s... => ).split('-').filter(Boolean).s...               │
+ │                                                                                                            │
+ │    370            }                                                                                        │
+ │    371                                                                                                     │
+ │    372            const slugify = (text: string) => text.toLowerCase().replace(/\s+/g,                     │
+ │           '-').replace(/[^a-z0-9-]/g, '');                                                                 │
+ │    373  -         const slug = slugify(slugFromAi).split('-').filter(Boolean).slice(0, 5).join('-');       │
+ │    373  +         const slug = slugify(slugFromAi).split('-').filter(Boolean).slice(0, 6).join('-');       │
+ │    374                                                                                                     │
+ │    375            console.log(`\nSummary by ${summarizerName} (took ${duration.toFixed(1)}s):              │
+ │           "${slug}"`);                                                                                     │
+ │    376            logFileName = `${prefix}-${timestamp}-${slug}.txt`;                                      │
+ │    379            console.error(`\nError parsing summary JSON from ${summarizerName}. Using raw output as  │
+ │           fallback.`);                                                                                     │
+ │    380            console.error(`Raw output: ${rawSummaryJson}`);                                          │
+ │    381            const slugify = (text: string) => text.toLowerCase().replace(/\s+/g,                     │
+ │           '-').replace(/[^a-z0-9-]/g, '');                                                                 │
+ │    382  -         const slug = slugify(rawSummaryJson).split('-').filter(Boolean).slice(0, 5).join('-');   │
+ │    382  +         const slug = slugify(rawSummaryJson).split('-').filter(Boolean).slice(0, 6).join('-');   │
+ │    383            logFileName = `${prefix}-${timestamp}-${slug}.txt`;                                      │
+ │    384        }                                                                                            │
+ │    385    }                                                                                                │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 我已经将单词限制从 5 个更新为 6 个。
+
+
+  现在我将再次运行构建命令以确保一切正常。
+ ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ✔  Shell npm run build (Compile TypeScript code to JavaScript.)                                            │
+ │                                                                                                            │
+ │                                                                                                            │
+ │    > ai-cli-log@1.0.9 build                                                                                │
+ │    > tsc                                                                                                   │
+ │                                                                                                            │
+ │                                                                                                            │
+ ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ 好的，代码已经成功编译。现在，文件名中的摘要长度限制已调整为 6 个单词。
+
+
+  如果您还有其他需要，请随时提出。
+
+╭───────────╮
+│  > /quit  │
+╰───────────╯
+
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                                │
+│  Agent powering down. Goodbye!                                                                                                 │
+│                                                                                                                                │
+│  Interaction Summary                                                                                                           │
+│  Tool Calls:                 4 ( ✔ 4 ✖ 0 )                                                                                     │
+│  Success Rate:               100.0%                                                                                            │
+│  User Agreement:             100.0% (2 reviewed)                                                                               │
+│                                                                                                                                │
+│  Performance                                                                                                                   │
+│  Wall Time:                  44h 43m 21s                                                                                       │
+│  Agent Active:               4h 42m 33s                                                                                        │
+│    » API Time:               1m 14s (0.4%)                                                                                     │
+│    » Tool Time:              4h 41m 18s (99.6%)                                                                                │
+│                                                                                                                                │
+│                                                                                                                                │
+│  Model Usage                  Reqs   Input Tokens  Output Tokens                                                               │
+│  ───────────────────────────────────────────────────────────────                                                               │
+│  gemini-2.5-pro                  6         92,068          1,203                                                               │
+│                                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯

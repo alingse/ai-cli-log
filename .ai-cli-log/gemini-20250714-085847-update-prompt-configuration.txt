@@ -25,17 +25,17 @@ Tips for getting started:
  ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
  │ ✔  Shell echo $HOME (Get the absolute path of the home directory to read the configuration file.)          │
  │                                                                                                            │
- │    /Users/zhihu                                                                                            │
+ │    /Users/*****                                                                                            │
  │                                                                                                            │
  ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ✦ 好的，现在我可以读取您的配置文件了。
  ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
  │ ✔  ReadFile ...../../.config/ai-cli-log/config.json                                                        │
  │                                                                                                            │
- │    File path must be within the root directory (/Users/zhihu/output/github/ai-cli-log):                    │
- │    /Users/zhihu/.config/ai-cli-log/config.json                                                             │
+ │    File path must be within the root directory (/Users/*****/output/github/ai-cli-log):                    │
+ │    /Users/*****/.config/ai-cli-log/config.json                                                             │
  ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-✦ 抱歉，我无法直接访问您主目录下的配置文件。我的访问权限被限制在当前项目目录 /Users/zhihu/output/github/ai-cli-log 内。
+✦ 抱歉，我无法直接访问您主目录下的配置文件。我的访问权限被限制在当前项目目录 /Users/*****/output/github/ai-cli-log 内。
 
 
   为了让我能评估您的 prompt 质量，请您将 ~/.config/ai-cli-log/config.json 文件的内容粘贴在这里。

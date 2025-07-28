@@ -299,7 +299,7 @@ Tips for getting started:
 
 
    1. 手动更新：最快的方法是手动编辑您的本地配置文件。
-       * 文件路径: /Users/zhihu/output/github/ai-cli-log/.ai-cli-log/config.json
+       * 文件路径: /Users/*****/output/github/ai-cli-log/.ai-cli-log/config.json
        * 将 prompt 的值替换为我们最新优化的版本：
 
 
