@@ -116,7 +116,7 @@ Tips for getting started:
  ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
  │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `src/index.ts`, `package.json` (within t… │
  │                                                                                                                       │
- │    ### ReadManyFiles Result (Target Dir: `/Users/zhihu/output/github/ai-cli-log`)                                     │
+ │    ### ReadManyFiles Result (Target Dir: `/Users/*****/output/github/ai-cli-log`)                                     │
  │                                                                                                                       │
  │    Successfully read and concatenated content from **2 file(s)**.                                                     │
  │                                                                                                                       │
@@ -2061,7 +2061,7 @@ Tips for getting started:
   现在，我将使用这个文件来执行提交。I will now run a command to commit the changes using the message from the
   temporary file. This is a safer way to handle multi-line commit messages.
  ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
- │ ✔  Shell git commit -F /Users/zhihu/output/github/ai-cli-log/COMMIT_MSG.tmp                                │
+ │ ✔  Shell git commit -F /Users/*****/output/github/ai-cli-log/COMMIT_MSG.tmp                                │
  │                                                                                                            │
  │    [feature-args-parser 1a888f2] feat(cli): Refactor argument parsing and enhance features                 │
  │     5 files changed, 95 insertions(+), 68 deletions(-)                                                     │
@@ -2073,7 +2073,7 @@ Tips for getting started:
   最后，我将删除这个临时的提交信息文件。I will now run a command to remove the temporary commit message file. This
   cleans up the working directory.
  ╭───────────────────────────────────────────────────────────────────╮
- │ ✔  Shell rm /Users/zhihu/output/github/ai-cli-log/COMMIT_MSG.tmp  │
+ │ ✔  Shell rm /Users/*****/output/github/ai-cli-log/COMMIT_MSG.tmp  │
  ╰───────────────────────────────────────────────────────────────────╯
 ✦ 好了，所有更改都已成功提交。
 

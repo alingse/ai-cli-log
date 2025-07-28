@@ -25,7 +25,7 @@ Tips for getting started:
  ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
  │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `src/index.ts`, `README.md` (within targ… │
  │                                                                                                                       │
- │    ### ReadManyFiles Result (Target Dir: `/Users/zhihu/output/github/ai-cli-log`)                                     │
+ │    ### ReadManyFiles Result (Target Dir: `/Users/*****/output/github/ai-cli-log`)                                     │
  │                                                                                                                       │
  │    Successfully read and concatenated content from **2 file(s)**.                                                     │
  │                                                                                                                       │

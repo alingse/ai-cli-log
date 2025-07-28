@@ -23,9 +23,9 @@ Tips for getting started:
 
   首先，我需要阅读 README.md 和 src/index.ts 文件，以了解当前的文档结构和 sgpt 的具体实现方式。
  ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
- │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `/Users/zhihu/output/github/ai-cli-log/R… │
+ │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `/Users/*****/output/github/ai-cli-log/R… │
  │                                                                                                                       │
- │    ### ReadManyFiles Result (Target Dir: `/Users/zhihu/output/github/ai-cli-log`)                                     │
+ │    ### ReadManyFiles Result (Target Dir: `/Users/*****/output/github/ai-cli-log`)                                     │
  │                                                                                                                       │
  │    Successfully read and concatenated content from **2 file(s)**.                                                     │
  │                                                                                                                       │

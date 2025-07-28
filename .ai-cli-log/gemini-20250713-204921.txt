@@ -21,9 +21,9 @@ Tips for getting started:
 
 ✦ 好的，我将阅读 GEMINI.md、README.md 和 src/index.ts 文件来全面了解这个项目。
  ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
- │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `/Users/zhihu/output/github/ai-cli-log/G… │
+ │ ✔  ReadManyFiles Will attempt to read and concatenate files using patterns: `/Users/*****/output/github/ai-cli-log/G… │
  │                                                                                                                       │
- │    ### ReadManyFiles Result (Target Dir: `/Users/zhihu/output/github/ai-cli-log`)                                     │
+ │    ### ReadManyFiles Result (Target Dir: `/Users/*****/output/github/ai-cli-log`)                                     │
  │                                                                                                                       │
  │    Successfully read and concatenated content from **2 file(s)**.                                                     │
  │                                                                                                                       │
@@ -765,7 +765,7 @@ Tips for getting started:
 
 
    1. 修改 `src/index.ts`：将我们讨论过的、基于 spawn 的新逻辑完整地应用到主文件中。
-   2. 创建示例配置文件：我会在你的用户主目录 (/Users/zhihu/)下创建一个名为 .ai-cli-log.config.json
+   2. 创建示例配置文件：我会在你的用户主目录 (/Users/*****/)下创建一个名为 .ai-cli-log.config.json
       的示例文件，你可以根据自己使用的 AI 工具进行修改。
 
 
@@ -808,7 +808,7 @@ Tips for getting started:
 
 
    1. 再次尝试修改 `src/index.ts`：应用我们之前讨论过的代码，以支持 --ai-rename 功能。
-   2. 创建全局配置文件：在你的主目录 /Users/zhihu/ 下创建 .ai-cli-log.config.json 文件，并写入我们刚刚优化的 prompt。
+   2. 创建全局配置文件：在你的主目录 /Users/*****/ 下创建 .ai-cli-log.config.json 文件，并写入我们刚刚优化的 prompt。
 
 
   我将同时执行这两个操作。
@@ -875,7 +875,7 @@ Tips for getting started:
     9 ? What arguments should be passed to the command? (optional, separate with spaces)
    10 > -p "Summarize this session for a filename (3-5 words, lowercase):"
    11 
-   12 ✔ Configuration  'gemini-summarizer' saved successfully to /Users/zhihu/.ai-cli-log.config.json!
+   12 ✔ Configuration  'gemini-summarizer' saved successfully to /Users/*****/.ai-cli-log.config.json!
    13 ? Would you like to set 'gemini-summarizer' as the default? (Y/n)
    14 > Y
    15 
@@ -967,7 +967,7 @@ Tips for getting started:
 
 
    2. Create a Default Configuration: To get you started immediately, I will create a default .ai-cli-log.config.json
-      file in your home directory (/Users/zhihu/). This file will contain a pre-made configuration for gemini.
+      file in your home directory (/Users/*****/). This file will contain a pre-made configuration for gemini.
 
 
   Let's start by updating the main application file.
@@ -1025,7 +1025,7 @@ Tips for getting started:
      phrase:"
    5 Sample how many lines from start/end for long sessions? (e.g., 100, or 0 for unlimited): 200
    6 Set "ollama-summarizer" as the default summarizer? (y/N): y
-   7 ✔ Configuration  "ollama-summarizer" saved successfully to /Users/zhihu/.ai-cli-log.config.json
+   7 ✔ Configuration  "ollama-summarizer" saved successfully to /Users/*****/.ai-cli-log.config.json
 
 
   解释
@@ -2392,7 +2392,7 @@ Tips for getting started:
 
 
   第一步：创建链接
-  在你的项目根目录 (/Users/zhihu/output/github/ai-cli-log) 下，只运行一次：
+  在你的项目根目录 (/Users/*****/output/github/ai-cli-log) 下，只运行一次：
 
    1 npm link
 
@@ -2542,7 +2542,7 @@ Tips for getting started:
    14 Which one would you like to set as the default? (Enter a number, or press Enter for none): 1
    15 
    16 ✔ Default summarizer  set to "gemini-pro".
-   17 ✔ Configuration successfully saved to /Users/zhihu/.config/ai-cli-log/config.json
+   17 ✔ Configuration successfully saved to /Users/*****/.config/ai-cli-log/config.json
 
 
   这个方案的优势

@@ -363,11 +363,14 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
                         const cleanJson = jsonMatch ? jsonMatch[0] : rawSummaryJson;
 
                         const summaryData = JSON.parse(cleanJson);
-                        const slug = summaryData.summary;
+                        const slugFromAi = summaryData.summary;
 
-                        if (typeof slug !== 'string') {
+                        if (typeof slugFromAi !== 'string') {
                             throw new Error('Invalid JSON structure from summarizer: "summary" key is missing or not a string.');
                         }
+
+                        const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                        const slug = slugify(slugFromAi).split('-').filter(Boolean).slice(0, 6).join('-');
 
                         console.log(`\nSummary by ${summarizerName} (took ${duration.toFixed(1)}s): "${slug}"`);
                         logFileName = `${prefix}-${timestamp}-${slug}.txt`;
@@ -376,7 +379,7 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
                         console.error(`\nError parsing summary JSON from ${summarizerName}. Using raw output as fallback.`);
                         console.error(`Raw output: ${rawSummaryJson}`);
                         const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-                        const slug = slugify(rawSummaryJson).split('-').slice(0, 10).join('-');
+                        const slug = slugify(rawSummaryJson).split('-').filter(Boolean).slice(0, 6).join('-');
                         logFileName = `${prefix}-${timestamp}-${slug}.txt`;
                     }
                 }
