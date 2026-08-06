@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import * as pty from 'node-pty';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -300,29 +299,32 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
         allowProposedApi: true,
     });
 
-    const term = pty.spawn(command, commandArgs, {
-        name: 'xterm-color',
-        cols: process.stdout.columns || 80,
-        rows: process.stdout.rows || 24,
+    const proc = spawn(command, commandArgs, {
+        stdio: ['pipe', 'pipe', 'pipe'],
         cwd: process.cwd(),
-        env: process.env as { [key: string]: string },
+        env: process.env,
+        shell: true,
     });
 
-    const onData = (data: string) => {
-        process.stdout.write(data);
-        xterm.write(data);
-    };
-    term.onData(onData);
+    proc.stdout.on('data', (data: Buffer) => {
+        const output = data.toString();
+        process.stdout.write(output);
+        xterm.write(output);
+    });
+    proc.stderr.on('data', (data: Buffer) => {
+        const output = data.toString();
+        process.stdout.write(output);
+        xterm.write(output);
+    });
 
-    const onStdin = (data: Buffer) => term.write(data.toString());
+    const onStdin = (data: Buffer) => proc.stdin!.write(data);
     if (process.stdin.isTTY) {
         process.stdin.setRawMode(true);
         process.stdin.resume();
         process.stdin.on('data', onStdin);
     }
 
-    const onExit = async ({ exitCode }: { exitCode: number }) => {
-        term.kill();
+    proc.on('exit', async (exitCode: number | null) => {
         if (process.stdin.isTTY) {
             process.stdin.removeListener('data', onStdin);
             process.stdin.setRawMode(false);
@@ -396,12 +398,7 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
             });
         }, 200);
     };
-    term.onExit(onExit);
 
-    process.on('resize', () => {
-        term.resize(process.stdout.columns, process.stdout.rows);
-        xterm.resize(process.stdout.columns, process.stdout.rows);
-    });
 }
 
 // --- 3. MAIN ENTRY POINT & ARGUMENT PARSER ---
