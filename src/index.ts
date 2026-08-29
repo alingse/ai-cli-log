@@ -314,7 +314,63 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
     };
     term.onData(onData);
 
-    const onStdin = (data: Buffer) => term.write(data.toString());
+    // Ctrl+Z byte constant (ASCII 26)
+    const CTRL_Z = 0x1A;
+
+    // Handle suspension: restore terminal and send SIGTSTP to self
+    const handleSuspend = () => {
+        if (process.stdin.isTTY) {
+            process.stdin.setRawMode(false);
+        }
+        // Send SIGTSTP to our process group to suspend
+        process.kill(0, 'SIGTSTP');
+    };
+
+    // Delay (ms) between the SIGWINCH-forcing resize and restoring the real
+    // terminal size on resume. Configurable via AI_CLI_LOG_RESUME_REDRAW_MS
+    // (default 100); bump it on slow/remote terminals where the child needs
+    // longer to process the first SIGWINCH before the second one arrives.
+    const RESUME_REDRAW_MS = (() => {
+        const v = parseInt(process.env.AI_CLI_LOG_RESUME_REDRAW_MS || '', 10);
+        return Number.isFinite(v) && v >= 0 ? v : 100;
+    })();
+
+    // Handle resume: restore raw mode when 'fg' is used
+    const handleContinue = () => {
+        if (process.stdin.isTTY) {
+            process.stdin.setRawMode(true);
+            process.stdin.resume();
+        }
+        // Re-sync terminal dimensions and force the child TUI (e.g. claude) to
+        // repaint. Resizing to the *same* size is a no-op that emits no SIGWINCH,
+        // so the screen stays blank/stale after `fg` until the next keystroke.
+        // Briefly toggle the row count to guarantee a SIGWINCH, then restore the
+        // real size so the child redraws at the correct dimensions.
+        const cols = process.stdout.columns || 80;
+        const rows = process.stdout.rows || 24;
+        const nudge = Math.max(1, rows - 1);
+        term.resize(cols, nudge);
+        xterm.resize(cols, nudge);
+        setTimeout(() => {
+            term.resize(cols, rows);
+            xterm.resize(cols, rows);
+        }, RESUME_REDRAW_MS);
+    };
+
+    // Register SIGCONT handler for resume
+    process.on('SIGCONT', handleContinue);
+
+    // Modified stdin handler: detect Ctrl+Z and trigger suspension
+    const onStdin = (data: Buffer) => {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i] === CTRL_Z) {
+                handleSuspend();
+                return; // Don't forward Ctrl+Z to child
+            }
+        }
+        term.write(data.toString());
+    };
+
     if (process.stdin.isTTY) {
         process.stdin.setRawMode(true);
         process.stdin.resume();
@@ -322,6 +378,9 @@ function runLoggingSession(command: string, commandArgs: string[], summaryArg?: 
     }
 
     const onExit = async ({ exitCode }: { exitCode: number }) => {
+        // Remove SIGCONT handler to prevent memory leaks
+        process.removeListener('SIGCONT', handleContinue);
+
         term.kill();
         if (process.stdin.isTTY) {
             process.stdin.removeListener('data', onStdin);
